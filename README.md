@@ -1,6 +1,6 @@
 # Time
 
-This framework uses Evolutionary algorithms (EAs) to optimize Izhikevich model parameters. 
+This framework uses Evolutionary algorithms (EAs) to optimize Izhikevich model parameters. Models with up to 4-compartments can be tuned to reproduce experimentally recorded spike times.
 
 Required libraries:
 
