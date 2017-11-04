@@ -1,0 +1,306 @@
+
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [
+		{
+			"time_min" : 0,
+			"sfa_linear_m2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" :
+			{
+				"W" : 0,
+				"V" : 0.10352439218320865
+			},
+			"pss" :
+			{
+				"W" : 0,
+				"V" : 41.49664000000007
+			},
+			"n_sfa_isis1" :
+			{
+				"W" : 0,
+				"V" : 8
+			},
+			"n_sfa_isis2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 523,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				"CA3 Giant (e)22010"
+			],
+			"fsl" :
+			{
+				"W" : 0,
+				"V" : 18.623350000000016
+			},
+			"current" :
+			{
+				"V" : [
+					90,
+					110
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" :
+			{
+				"V" : 200
+			},
+			"sfa_linear_b1" :
+			{
+				"W" : 0,
+				"V" : 1.118047114221306
+			},
+			"compartment" : 0
+		},
+		{
+			"time_min" : 0,
+			"sfa_linear_m2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" :
+			{
+				"W" : 0,
+				"V" : 0.1540820023980327
+			},
+			"pss" :
+			{
+				"W" : 0,
+				"V" : 10
+			},
+			"n_sfa_isis1" :
+			{
+				"W" : 0,
+				"V" : 8
+			},
+			"n_sfa_isis2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 526.6667,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "false",
+			"IDX_NOTE" : [
+				1,
+				"CA3 Giant (e)22010"
+			],
+			"fsl" :
+			{
+				"W" : 0,
+				"V" : 8.333399999999983
+			},
+			"current" :
+			{
+				"V" : [
+					-7787,
+					-7767
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" :
+			{
+				"V" : 200
+			},
+			"sfa_linear_b1" :
+			{
+				"W" : 0,
+				"V" : 1.1402560465079798
+			},
+			"compartment" : 0
+		},
+		{
+			"time_min" : 200,
+			"sfa_linear_m2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" :
+			{
+				"W" : 0,
+				"V" : 0.10144507936229112
+			},
+			"pss" :
+			{
+				"W" : 0,
+				"V" : 25.38373999999999
+			},
+			"n_sfa_isis1" :
+			{
+				"W" : 0,
+				"V" : 8
+			},
+			"n_sfa_isis2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 485.76439999999997,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "false",
+			"IDX_NOTE" : [
+				2,
+				"CA3 Giant (e)22010"
+			],
+			"fsl" :
+			{
+				"W" : 0,
+				"V" : 16.498539999999934
+			},
+			"current" :
+			{
+				"V" : [
+					85.847125,
+					105.847125
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" :
+			{
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" :
+			{
+				"V" : 200
+			},
+			"sfa_linear_b1" :
+			{
+				"W" : 0,
+				"V" : 1.1576844403960214
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [
+		{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 500,
+			"current_step" : 1,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		},
+		{
+			"type" : "INP_RES",
+			"INCLUDE" : true,	
+			"current" :-100,
+			"current_duration" : 1000,
+			"v_at_time":900,
+			"cons_weight" : 1.0
+		},
+		{
+			type:PROPAGATION,
+			"INCLUDE" : true,
+			 dend_current_min:500,
+			 dend_current_max:1000,
+			 dend_current_time_min:50,
+			 dend_current_duration:100,
+			 dend_current_step:100,
+			 dend_target_spike_freq:10,
+			 spike_prop_rate_min:1,
+			 cons_weight:1.0
+		},
+		 {
+		type:SYN_STIM_EPSP,
+		"INCLUDE" : true,
+		sim_duration:100,
+		ampa_epsp:{V:[0.1, 0.9]},
+		ampa_tau:5,
+		cons_weight:1.0
+		}
+	],
+	"parameter_ranges" :
+	{
+		"VT" : [
+			23, 25
+		],
+		"D" : [
+			100,
+			1000
+		],
+		"W" : [
+			0,
+			10
+		],
+		"VMIN" : [
+			8, 9
+		],
+		"VR" : [
+			-59,
+			-57
+		],
+		"G" : [
+			75,
+			150
+		],
+		"P" : [
+			0.3,
+			0.7
+		],
+		"A" : [
+			0,
+			0.05
+		],
+		"B" : [
+			-24,
+			-22
+		],
+		"VPEAK" : [
+			94,
+			95
+		],
+		"CM" : [
+			200,
+			300
+		],
+		"K" : [
+			1,
+			1.5
+		]
+	}
+}

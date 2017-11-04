@@ -1,0 +1,168 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [{
+			"time_min" : 0,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 200.57100000000003
+			},
+			"sfa_linear_m1" : {
+				"W" : 0,
+				"V" : 0.01504648267001996
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 40
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"fsl",
+				"n_sfa_isis1",
+				"pss"
+			],
+			"current_duration" : 774.857,
+			"pattern_class" : "ASP.SLN.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				"CA3 Basket (-)22232"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 4.2859999999999445
+			},
+			"current" : {
+				"V" : [
+					390,
+					410
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.2088239249511867
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		}
+		
+	],
+	"phenotype_constraints" : [
+		{
+			"type" : "FAST_SPIKER",
+			"INCLUDE" : "true",	
+			"current_min" : 50,
+			"current_max" : 700,
+			"current_duration" : 500,
+			"current_step" : 1,
+			"min_freq" : 25,
+			"cons_weight" : 1
+		}
+	],
+	"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -500,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 1000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+	"parameter_ranges" : {
+		"VT" : [
+			5,
+			10
+		],
+		"D" : [
+			-25,
+			100
+		],
+		"W" : [
+			0,
+			1
+		],
+		"VMIN" : [
+			3,
+			10
+		],
+		"VR" : [
+			-60,
+			-57
+		],
+		"G" : [
+			30,
+			100
+		],
+		"P" : [
+			0.1,
+			0.3
+		],
+		"A" : [
+			0,
+			0.1
+		],
+		"B" : [
+			0,
+			30
+		],
+		"VPEAK" : [
+			65,
+			67
+		],
+		"CM" : [
+			10,
+			300
+		],
+		"K" : [
+			3,
+			12
+		]
+	}
+}

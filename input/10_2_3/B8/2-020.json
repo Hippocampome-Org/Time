@@ -1,0 +1,104 @@
+{
+"parameter_ranges" : {
+		"K" : [
+			0.1,
+			10
+		],
+		"A" : [
+			0,
+			0.02
+		],
+		"B" : [
+			-25,
+			50
+		],
+		"D" : [
+			-20,
+			120
+		],
+		"CM" : [
+			10,
+			800
+		],
+		"VR" : [
+			-62,
+			-60
+		],
+		"VMIN" : [
+			11,
+			12
+		],
+		"VT" : [
+			30,
+			40
+		],
+		"VPEAK" : [
+			110,
+			111
+		],
+		"G" : [
+			5,
+			250
+		],
+		"P" : [
+			0.500000,
+			0.500001
+		],
+		"W" : [
+			0,
+			1
+		]
+	},
+
+spike_pattern_constraints:[					
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "ca3 trilaminar", "original duration is 510 with 1 burst, used trick to get *pstut* with 2 bursts and 750ms "],
+					compartment:0,
+					type:SPIKES,	
+					pattern_class:"ASP.SLN",
+					current:{V:[290, 310]},
+					current_duration:510,						
+					time_min:100,
+					valid_max_v:{V:200},										
+					fsl:{V:6.09, W:0},
+					pss:{V:247.54, W:0},
+					nbursts:{V:1, W:0},
+					n_spikes:{V:35, W:0},
+					swa:{V:-15, W:1000},
+					eval:[fsl, pss, n_sfa_isis1],
+					"sfa_linear_m1": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis1": {
+						"W": 0,
+						"V": 34
+					},
+					"sfa_linear_b1": {
+						"W": 0,
+						"V": 1.4
+					},
+					"sfa_linear_m2": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis2": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_b2": {
+						"W": 0,
+						"V": 0
+					},
+					bursts:{V:[{nspikes:35, b_w:250, pbi:300},
+								{nspikes:25, b_w:200}],
+					feat_w:{nspikes:0.50, b_w:0.25, pbi:0.25},
+					tot_w:1
+					},
+					pattern_weight:1.00
+					}
+			],
+pattern_repair_weights:[1.0, 0.00, 0.00],
+"multi_comp_constraints" : [{}]
+}

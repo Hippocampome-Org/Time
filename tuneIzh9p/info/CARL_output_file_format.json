@@ -1,0 +1,40 @@
+
+{
+	soma_patterns :
+	[
+		{
+			notes : "I will use I and I_dur to identify the constraint",
+			I : 500,
+			I_dur : 800,
+			t_step : 0.1,
+			v_trace : [],
+			spike_times : []
+		},
+
+		{
+			notes : "I will use I and I_dur to identify the constraint",
+			I : 800,
+			I_dur : 1000,
+			t_step : 0.1,
+			v_trace : [],
+			spike_times : []
+		},
+
+		{
+			notes : "I will use I and I_dur to identify the constraint",
+			I : 900,
+			I_dur : 400,
+			t_step : 0.1,
+			v_trace : [],
+			spike_times : []
+		}
+	],
+
+	multi_comp_sim :
+		{ 
+			ramp_rheos: [],
+			v_defs:[],
+			spike_proped: [],
+			epsps: [],
+		}
+}

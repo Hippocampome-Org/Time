@@ -1,0 +1,213 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [      
+      {
+         "time_min": 0,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": 0.682133122
+         },
+         "pss": {
+            "W": 0,
+            "V": 56.55642
+         },
+         "n_sfa_isis1": {
+            "W": 3,
+            "V": 3
+         },
+		 "n_spikes": {
+            "W": 3,
+            "V": 4
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+         "eval": [
+            "fsl",n_sfa_isis1,            
+            "pss"
+         ],
+         "current_duration": 97.22721999999999,
+         "pattern_class": "TSWB.SLN.",
+         "type": "SPIKES",
+         "INCLUDE": "false",
+         "IDX_NOTE": [
+            1,
+            "CA3c Pyramidal (e)3223p"
+         ],
+         "fsl": {
+            "W": 0,
+            "V": 4.77091999999999
+         },
+         "current": {"V": [
+            490,
+            510
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "valid_max_v": {"V": 200},
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 0.722142625
+         },
+         "compartment": 0
+      },
+      {
+         "time_min": 0,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": -2.081186408
+         },
+         "pss": {
+            "W": 0,
+            "V": 74.75250000000005
+         },
+         "n_sfa_isis1": {
+            "W": 3,
+            "V": 2
+         },
+		  "n_spikes": {
+            "W": 2,
+            "V": 3
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+         "eval": [
+            "fsl",n_sfa_isis1,
+            "pss"
+         ],
+         "current_duration": 95.94419999999991,
+         "pattern_class": "TSWB.SLN.",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            2,
+            "CA3c Pyramidal (e)3223p"
+         ],
+         "fsl": {
+            "W": 0,
+            "V": 9.408999999999878
+         },
+         "current": {"V": [
+            430,
+            450
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "valid_max_v": {"V": 200},
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 3.081186408
+         },
+         "compartment": 0
+      }
+   ],
+   "multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -500,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 1000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+   "parameter_ranges": {
+      "VT": [
+         17,
+         22
+      ],
+      "D": [
+         0,
+         1000
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         14,
+         15
+      ],
+      "VR": [
+         -63,
+         -61
+      ],
+      "G": [
+         25,
+         150
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.01
+      ],
+      "B": [
+         -25,
+         25
+      ],
+      "VPEAK": [
+         75,
+         80
+      ],
+      "CM": [
+         250,
+         350
+      ],
+      "K": [
+         0.5,
+         12
+      ]
+   }
+}

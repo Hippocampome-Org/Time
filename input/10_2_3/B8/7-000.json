@@ -1,0 +1,156 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+       {
+         "time_min": 0,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0.05,
+            "V": 127.5
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": -1
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 6
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+		nbursts:{V:4, W:0.10},
+		swa:{V:-10, W:1000},
+		bursts:{V:[{nspikes:4, b_w:30, pbi:100, pbi_vmin_offset:-10},
+					{nspikes:4, b_w:30, pbi:100, pbi_vmin_offset:-10},
+					{nspikes:4, b_w:30, pbi:100, pbi_vmin_offset:-10},
+		       {nspikes:4, b_w:30}
+					],
+			feat_w:{nsfa:0, nspikes:0.70, b_w:0.10, pbi:0.20, pbi_vmin_offset:0.00},
+			tot_w:0.90
+		},
+         "eval": [
+            bursts, nbursts
+         ],
+         "current_duration": 500,
+         "pattern_class": "PSWB",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            "search for non-chaotic doublets"
+         ],
+         "fsl": {
+            "W": 0.05,
+            "V": 3.25
+         },
+         "current": {"V": [
+            500,
+            700
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": -1
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      },
+      {
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "ASP.NASP", ""],
+					pattern_class:ASP.NASP,
+					compartment:0,
+					type:SPIKES,	
+					current:{V:[700, 750]},
+					current_duration:760,						
+					time_min:0,
+					valid_max_v:{V:200},															
+					
+					fsl:{V:6.84900000000005, W:0.0},
+					pss:{V:10.096, W:0.0},
+					n_spikes:{V:33, W:0.0},
+					
+					sfa_linear_m1:{V:0.0654086598474514, W:1.5}, 
+					sfa_linear_b1:{V:1.37179777962922, W:1.5},
+					n_sfa_isis1:{V:12, W:0.0},					
+					
+					sfa_linear_m2:{V:0, W:0}, 
+					sfa_linear_b2:{V:2.99043953398437, W:1.5},
+					n_sfa_isis2:{V:20, W:0.0},
+					
+					eval:[n_sfa_isis1],
+					pattern_weight:0.1
+					}
+
+      
+   ],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         5,
+         30
+      ],
+      "D": [
+         -50,
+         200
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         10,
+         20
+      ],
+      "VR": [
+         -70.0,
+         -60.0
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.05
+      ],
+      "B": [
+         -100,
+         100
+      ],
+      "VPEAK": [
+         60,
+         90
+      ],
+      "CM": [
+         10,
+         2000
+      ],
+      "K": [
+         0.1,
+         12
+      ]
+   }
+}

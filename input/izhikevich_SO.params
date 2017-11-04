@@ -1,0 +1,11 @@
+parent.0=izhikevich_base.params
+pop.subpop.0.species.fitness 	= ec.simple.SimpleFitness
+
+stat		= ec.simple.SimpleStatistics
+stat.file=../output/Full
+stat.num-children = 1
+stat.child.0 = ec.simple.SimpleShortStatistics
+stat.child.0.file=../output/Stat
+
+#stat.do-message=false
+stat.do-generation = true

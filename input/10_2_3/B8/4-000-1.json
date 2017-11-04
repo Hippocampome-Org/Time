@@ -1,0 +1,128 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+      {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0.05,
+            "V": 200
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": -1
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 6
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+		nbursts:{V:2, W:0.20},
+		swa:{V:-10, W:1000},
+		bursts:{V:[{nspikes:7, b_w:673.8, pbi:577.54, pbi_vmin_offset:-10},
+		       {nspikes:1, b_w:-1}
+					],
+			feat_w:{nsfa:0, nspikes:0.25, b_w:0.25, pbi:0.50, pbi_vmin_offset:0.00},
+			tot_w:0.70
+		},
+         "eval": [            
+            "pss",
+            "fsl", bursts, nbursts,swa
+         ],
+         "current_duration": 1572.19,
+         "pattern_class": "PSTUT.",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            " CA1 Pyramidal"
+         ],
+         "fsl": {
+            "W": 0.05,
+            "V": 80.2
+         },
+         "current": {"V": [
+            598,
+            618
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": -1
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      }
+      
+   ],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         30,
+         70
+      ],
+      "D": [
+         -50,
+         100
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         22,
+         23
+      ],
+      "VR": [
+         -63.5,
+         -62.5
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.05
+      ],
+      "B": [
+         -100,
+         100
+      ],
+      "VPEAK": [
+         120,
+         125
+      ],
+      "CM": [
+         10,
+         2000
+      ],
+      "K": [
+         0.1,
+         12
+      ]
+   }
+}

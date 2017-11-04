@@ -1,0 +1,123 @@
+
+{
+	"parameter_ranges" :
+	{
+		"K" : [
+			0.5,
+			8
+		],
+		"A" : [
+			0,
+			0.05
+		],
+		"B" : [
+			-50,
+			25
+		],
+		"D" : [
+			0,
+			120
+		],
+		"CM" : [
+			10,
+			600
+		],
+		"VR" : [
+			-76,
+			-74
+		],
+		"VMIN" : [
+			30,
+			35
+		],
+		"VT" : [
+			55,
+			75
+		],
+		"VPEAK" : [
+			90,
+			93
+		],
+		"G" : [
+			5,
+			250
+		],
+		"P" : [
+			0.005,
+			0.2
+		],
+		"W" : [
+			0,
+			1
+		]
+	},
+
+	spike_pattern_constraints : [
+		{
+			"INCLUDE" : true,
+			IDX_NOTE : [1, "D.NASP "],
+			compartment : 0,
+			type : SPIKES,
+			pattern_class: D.NASP,
+			current :
+			{
+				V : [100, 600]
+			},
+			current_duration : 1017.40638,
+			time_min : 0,
+			valid_max_v :
+			{
+				V : 200
+			},
+
+			fsl :
+			{
+				V : 462.83484,
+				W : 0
+			},
+			pss :
+			{
+				V : 47.59492,
+				W : 0
+			},
+			sfa_linear_m1 :
+			{
+				V : 0, W:0
+			},
+			sfa_linear_b1 :
+			{
+				V : 1.257978527, W:0
+			},
+			n_sfa_isis1 :
+			{
+				V : 5, W:0
+			},
+			sfa_linear_m2 :
+			{
+				V : 0, W:0
+			},
+			sfa_linear_b2 :
+			{
+				V : 0, W:0
+			},
+			n_sfa_isis2 :
+			{
+				V : 0,	W : 0
+			},
+			eval : [fsl, pss, n_sfa_isis1],
+			pattern_weight : 1.00
+		}
+	],
+	pattern_repair_weights : [1.0, 0.00, 0.00],
+	"multi_comp_constraints" : [
+		{
+			"type" : "EXCITABILITY",
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 1,
+			"rheo_diff" : 1000,
+			"cons_weight" : 0
+		}
+	]
+}

@@ -1,0 +1,104 @@
+{
+"parameter_ranges" : {
+		"K" : [
+			0.1,
+			10
+		],
+		"A" : [
+			0,
+			0.02
+		],
+		"B" : [
+			-25,
+			50
+		],
+		"D" : [
+			-20,
+			120
+		],
+		"CM" : [
+			5,
+			2000
+		],
+		"VR" : [
+			-67,
+			-66
+		],
+		"VMIN" : [
+			4,
+			5
+		],
+		"VT" : [
+			0,
+			20
+		],
+		"VPEAK" : [
+			69,
+			70
+		],
+		"G" : [
+			5,
+			250
+		],
+		"P" : [
+			0.500000,
+			0.500001
+		],
+		"W" : [
+			0,
+			1
+		]
+	},
+
+spike_pattern_constraints:[					
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "ca1 axo axonic subtype "],
+					compartment:0,
+					type:SPIKES,	
+					pattern_class:"PSTUT",
+					current:{V:[590, 610]},
+					current_duration:356.61,						
+					time_min:100,
+					valid_max_v:{V:200},										
+					fsl:{V:0.01, W:0},
+					pss:{V:8.45, W:0},
+					nbursts:{V:2, W:0},
+					n_spikes:{V:-1, W:0},
+					swa:{V:-20, W:100},
+					eval:[fsl, pss, nbursts, bursts, swa],
+					"sfa_linear_m1": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis1": {
+						"W": 0,
+						"V": -1
+					},
+					"sfa_linear_b1": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_m2": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis2": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_b2": {
+						"W": 0,
+						"V": 0
+					},
+					bursts:{V:[{nspikes:34, b_w:180.7, pbi:67},
+								{nspikes:20, b_w:101.5}],
+					feat_w:{nspikes:0.50, b_w:0.25, pbi:0.25},
+					tot_w:1
+					},
+					pattern_weight:1.00
+					}
+			],
+pattern_repair_weights:[1.0, 0.00, 0.00],
+"multi_comp_constraints" : [{}]
+}

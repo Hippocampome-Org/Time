@@ -1,0 +1,130 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+       {
+         "time_min": 0,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0.05,
+            "V": 56.9
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": -1
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 6
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+		nbursts:{V:7, W:0.10},
+		swa:{V:-10, W:200},
+		bursts:{V:[{nspikes:4, b_w:39.9, pbi:34, pbi_vmin_offset:-10},
+					{nspikes:1, b_w:-1, pbi:39.2, pbi_vmin_offset:-10},
+					{nspikes:3, b_w:47.8, pbi:66, pbi_vmin_offset:-10},
+					{nspikes:1, b_w:-1, pbi:62.8, pbi_vmin_offset:-10},
+					{nspikes:2, b_w:23.4, pbi:64.9, pbi_vmin_offset:-10},
+					{nspikes:2, b_w:24.5, pbi:74.4, pbi_vmin_offset:-10},
+					{nspikes:3, b_w:58.5}
+					],
+			feat_w:{nsfa:0, nspikes:0.70, b_w:0.10, pbi:0.20, pbi_vmin_offset:0.00},
+			tot_w:0.80
+		},
+         "eval": [fsl,pss, bursts, nbursts,swa
+         ],
+         "current_duration": 604.4,
+         "pattern_class": "PSTUT",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            "DG MOLAX, TML"
+         ],
+         "fsl": {
+            "W": 0.05,
+            "V": 15.3
+         },
+         "current": {"V": [
+            390,
+            410
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": -1
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      }
+   ],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         15,
+         40
+      ],
+      "D": [
+         -50,
+         500
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         23,
+         25
+      ],
+      "VR": [
+         -55,
+         -54
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.01
+      ],
+      "B": [
+         -50,
+         50
+      ],
+      "VPEAK": [
+         85,
+         90
+      ],
+      "CM": [
+         10,
+         500
+      ],
+      "K": [
+         0.1,
+         2
+      ]
+   }
+}

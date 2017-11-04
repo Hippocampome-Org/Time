@@ -1,0 +1,118 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [{
+      "time_min": 0,
+      "sfa_linear_m2": {
+         "W": 0,
+         "V": 0
+      },
+      "sfa_linear_m1": {
+         "W": 0,
+         "V": -0.003655351921217158
+      },
+      "pss": {
+         "W": 0,
+         "V": 7.368753999999967
+      },
+      "n_sfa_isis1": {
+         "W": 0,
+         "V": 53
+      },
+      "n_sfa_isis2": {
+         "W": 0,
+         "V": 0
+      },
+      "eval": [
+         "n_sfa_isis1",
+         "fsl",
+         "pss"
+      ],
+      "current_duration": 586.4609399999999,
+      "pattern_class": "NASP.",
+      "type": "SPIKES",
+      "INCLUDE": "true",
+      "IDX_NOTE": [
+         0,
+         "MEC LIII Multipolar (i)113220"
+      ],
+      "fsl": {
+         "W": 0,
+         "V": 4.050049999999942
+      },
+      "current": {"V": [
+         240,
+         260
+      ]},
+      "pattern_weight": 1,
+      "sfa_linear_b2": {
+         "W": 0,
+         "V": 0
+      },
+      "sfa_linear_b1": {
+         "W": 0,
+         "V": 1.4433638158375137
+      },
+      "valid_max_v": {"V": 200},
+      "compartment": 0
+   }],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         15,
+         18
+      ],
+      "D": [
+         0,
+         120
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         20,
+         24
+      ],
+      "VR": [
+         -60,
+         -56
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.005
+      ],
+      "B": [
+         -25,
+         25
+      ],
+      "VPEAK": [
+         75,
+         80
+      ],
+      "CM": [
+         50,
+         600
+      ],
+      "K": [
+         0.5,
+         8
+      ]
+   }
+}

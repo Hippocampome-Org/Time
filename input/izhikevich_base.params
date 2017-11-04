@@ -1,0 +1,46 @@
+
+breedthreads	= auto
+evalthreads	= auto
+seed.0		= time
+
+state		= ec.simple.SimpleEvolutionState
+
+pop		= ec.Population
+init		= ec.simple.SimpleInitializer
+finish		= ec.simple.SimpleFinisher
+breed		= ec.simple.SimpleBreeder
+exch		= ec.simple.SimpleExchanger
+
+jobs = 1
+generations		= 2000
+pop.subpop.0.size 		= 240
+
+quit-on-run-complete	= true
+checkpoint		= false
+checkpoint-prefix	= ec
+checkpoint-modulo	= 1
+
+pop.subpops		= 1
+pop.subpop.0		= ec.Subpopulation
+
+pop.subpop.0.duplicate-retries 	= 0
+#
+pop.subpop.0.species 		= ec.vector.FloatVectorSpecies
+#following should be double when using with carlsim
+pop.subpop.0.species.ind	= ec.vector.DoubleVectorIndividual
+
+pop.subpop.0.species.crossover-type	= two
+base.likelihood = 0.5	
+
+select.tournament.size		= 2
+
+pop.subpop.0.species.pipe			= ec.vector.breed.VectorMutationPipeline
+pop.subpop.0.species.pipe.source.0		= ec.vector.breed.VectorCrossoverPipeline
+pop.subpop.0.species.pipe.source.0.source.0	= ec.select.TournamentSelection
+pop.subpop.0.species.pipe.source.0.source.1	= ec.select.TournamentSelection
+
+eval		= ec.simple.SimpleEvaluator
+eval.problem		= ec.app.izhikevich.ModelEvaluatorWrapper
+
+#breed.elite.0 = 2
+breed.elite-fraction.0 = 0.25

@@ -1,0 +1,71 @@
+
+breedthreads	= 1
+evalthreads	= 1
+seed.0		= time
+
+state		= ec.simple.SimpleEvolutionState
+pop		= ec.Population
+init		= ec.simple.SimpleInitializer
+finish		= ec.simple.SimpleFinisher
+breed		= ec.simple.SimpleBreeder
+exch		= ec.simple.SimpleExchanger
+
+jobs = 1
+generations		= 5000
+quit-on-run-complete	= true
+checkpoint		= false
+checkpoint-prefix	= ec_tuneIzh9p
+checkpoint-modulo	= 500
+
+
+ec.subpop.size 		= 400
+
+pop.subpops		= 5
+pop.subpop.0		= ec.Subpopulation
+pop.subpop.1		= ec.Subpopulation
+pop.subpop.2		= ec.Subpopulation
+pop.subpop.3		= ec.Subpopulation
+pop.subpop.4		= ec.Subpopulation
+#pop.subpop.5		= ec.Subpopulation
+#pop.subpop.6		= ec.Subpopulation
+#pop.subpop.7		= ec.Subpopulation
+
+ec.subpop.duplicate-retries 	= 0
+
+ec.subpop.species 		= ec.vector.FloatVectorSpecies
+vector.species.ind	= ec.vector.DoubleVectorIndividual
+vector.species.fitness =                ec.simple.SimpleFitness
+vector.species.crossover-type	= two
+base.likelihood = 0.5	
+
+select.tournament.size		= 2
+
+vector.species.pipe				= ec.vector.breed.VectorMutationPipeline
+vector.species.pipe.source.0		= ec.vector.breed.VectorCrossoverPipeline
+vector.species.pipe.source.0.source.0	= ec.select.TournamentSelection
+vector.species.pipe.source.0.source.1	= ec.select.TournamentSelection
+vector.mutate.source.0 = ec.select.TournamentSelection
+
+
+
+# Set up external fitness evaluation
+# =========================
+eval		= ecjapp.eval.MultiPopSimpleGroupedEvaluator
+eval.problem.objective.idealFitnessValue = 0
+eval.problem =                          ecjapp.eval.problem.MultiPopCommandProblem
+eval.problem.objective = ec.app.izhikevich.PhenotypeToFitness                
+#ecjapp.eval.problem.objective.StringToDoubleObjective
+eval.problem.errorGenesFile = 		$output/genesOnError.txt
+eval.problem.errorResultsFile = 	$output/resultsOnError.txt
+eval.problem.simulationCommand =        $../CARLsim/projects/tuneIzh9p/carlsim_tuneIzh9p_4c2_wrapper
+eval.problem.simulationCommandArguments =        -device 0 -subPops
+
+#breed.elite.0 = 2
+breed.elite-fraction.0 = 0.25
+breed.elite-fraction.1 = 0.25
+breed.elite-fraction.2 = 0.25
+breed.elite-fraction.3 = 0.25
+breed.elite-fraction.4 = 0.25
+#breed.elite-fraction.5 = 0.25
+#breed.elite-fraction.6 = 0.25
+#breed.elite-fraction.7 = 0.25

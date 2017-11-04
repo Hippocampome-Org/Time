@@ -1,0 +1,118 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [{
+      "time_min": 0,
+      "sfa_linear_m2": {
+         "W": 0,
+         "V": 0
+      },
+      "sfa_linear_m1": {
+         "W": 0,
+         "V": 0.012191983554882348
+      },
+      "pss": {
+         "W": 0,
+         "V": 15.20467999999994
+      },
+      "n_sfa_isis1": {
+         "W": 0,
+         "V": 58
+      },
+      "n_sfa_isis2": {
+         "W": 0,
+         "V": 0
+      },
+      "eval": [
+         "n_sfa_isis1",
+         "pss",
+         "fsl"
+      ],
+      "current_duration": 791.22809,
+      "pattern_class": "ASP.",
+      "type": "SPIKES",
+      "INCLUDE": "true",
+      "IDX_NOTE": [
+         0,
+         "CA3 Horizontal AA (i)00012"
+      ],
+      "fsl": {
+         "W": 0,
+         "V": 6.432800000000043
+      },
+      "current": {"V": [
+         390,
+         410
+      ]},
+      "pattern_weight": 1,
+      "sfa_linear_b2": {
+         "W": 0,
+         "V": 0
+      },
+      "valid_max_v": {"V": 200},
+      "sfa_linear_b1": {
+         "W": 0,
+         "V": 1.9589369575082327
+      },
+      "compartment": 0
+   }],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         24,
+         26
+      ],
+      "D": [
+         0,
+         120
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         20,
+         22
+      ],
+      "VR": [
+         -65,
+         -56
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.005
+      ],
+      "B": [
+         -25,
+         25
+      ],
+      "VPEAK": [
+         84,
+         85
+      ],
+      "CM": [
+         50,
+         600
+      ],
+      "K": [
+         0.5,
+         8
+      ]
+   }
+}
