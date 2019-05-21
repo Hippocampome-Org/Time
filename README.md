@@ -33,6 +33,7 @@ For more details and discussion of the modeling framework, please refer to the f
 Evolving simple models of diverse intrinsic dynamics in hippocampal neuron types. 
 Frontiers in neuroinformatics. 2018 Mar 13;12:8.
 Venkadesh S, Komendantov AO, Listopad S, Scott EO, De Jong K, Krichmar JL, Ascoli GA. 
+https://doi.org/10.3389/fninf.2018.00008
 
 For more details on simulating the models, please refer to this help page:
 http://hippocampome.org/csv2db/Help_Model_Simulation.php
