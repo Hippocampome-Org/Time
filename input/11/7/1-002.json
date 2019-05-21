@@ -1,0 +1,188 @@
+
+{
+	"parameter_ranges" :
+	{
+		"K" : [
+			0.5,
+			2.0
+		],
+		"A" : [
+			0,
+			0.1
+		],
+		"B" : [
+			-50,
+			50
+		],
+		"D" : [
+			0,
+			500
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"VR" : [
+			-66,
+			-65
+		],
+		"VMIN" : [
+			10,
+			15
+		],
+		"VT" : [
+			20,
+			35
+		],
+		"VPEAK" : [
+			87,
+			88
+		],
+		"G" : [
+			5,
+			250
+		],
+		"P" : [
+			0.005,
+			1.0
+		],
+		"W" : [
+			0,
+			1
+		]
+	},
+
+	spike_pattern_constraints : [
+	{
+			"INCLUDE" : true,
+			IDX_NOTE : [1, "D.NASP, input current 150 not 40 "],
+			compartment : 0,
+			type : SPIKES,
+			"pattern_class": "D.NASP",
+			current :
+			{
+				V : [40, 200]
+			},
+			current_duration : 483,
+			time_min : 100,
+			valid_max_v :
+			{
+				V : 200
+			},
+
+			fsl :
+			{
+				V : 265.63,
+				W : 0
+			},
+			pss :
+			{
+				V : 57.8,
+				W : 0
+			},			
+			sfa_linear_m1 :
+			{
+				V : 0 ,
+				W : 0
+			},
+			sfa_linear_b1:
+			{
+				V : 1.085106383,
+				W : 0
+			},
+			n_sfa_isis1 :
+			{
+				V : 2,
+				W : 0
+			},
+			sfa_linear_m2 :
+			{
+				V : 0,
+				W : 0
+			},
+			sfa_linear_b2:
+			{
+				V :0,
+				W : 0
+			},
+			n_sfa_isis2 :
+			{
+				V : 0,
+				W : 0
+			},
+			eval : [fsl, pss, n_sfa_isis1],
+			pattern_weight : 1.0
+		},
+		{
+			"INCLUDE" : true,
+			IDX_NOTE : [2, "d.asp. "],
+			compartment : 0,
+			type : SPIKES,
+			"pattern_class": "ASP.",
+			current :
+			{
+				V : [900, 1100]
+			},
+			current_duration : 962,
+			time_min : 100,
+			valid_max_v :
+			{
+				V : 200
+			},
+			fsl :
+			{
+				V : 14.12,
+				W : 0
+			},
+			pss :
+			{
+				V : 2.2,
+				W : 0
+			},
+			sfa_linear_m1 :
+			{
+				V : 0.018757341,
+				W :0
+			},
+			sfa_linear_b1 :
+			{
+				V : 2.61121746,
+				W:0
+			},
+			n_sfa_isis1 :
+			{
+				V : 43,
+				W : 0
+			},
+			sfa_linear_m2 :
+			{
+				V : 0,
+				W :0
+			},
+			sfa_linear_b2 :
+			{
+				V : 0,
+				W:0
+			},
+			n_sfa_isis2 :
+			{
+				V : 0,
+				W : 0
+			},
+			eval : [fsl, pss,  n_sfa_isis1],
+			pattern_weight : 1
+		}		
+	],
+	pattern_repair_weights : [1.0, 0.00, 0.00],
+	"multi_comp_constraints" : [
+		{
+			"type" : "EXCITABILITY",
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 1,
+			"rheo_diff" : 1000,
+			"cons_weight" : 0
+		}
+	]
+}

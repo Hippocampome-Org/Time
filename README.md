@@ -29,7 +29,10 @@ input/10_2_3/B4/3-000.json.
 - Utility classes are available under src\ec\app\izhikevich\util package to read ECJ-generated output files
 - .cpp files for simulating multi-compartment models using CARLsim are located under tuneIzh9p/
 
-For more details and discussion, please refer to the following article:
-(more details coming soon...)
-Simple models of diverse intrinsic dynamics in hippocampal neuron types
-Siva Venkadesh, Alexander O. Komendantov, Stanislav Listopad, Eric O. Scott, Kenneth De Jong, Jeffrey L. Krichmar, Giorgio A. Ascoli
+For more details and discussion of the modeling framework, please refer to the following article:
+Evolving simple models of diverse intrinsic dynamics in hippocampal neuron types. 
+Frontiers in neuroinformatics. 2018 Mar 13;12:8.
+Venkadesh S, Komendantov AO, Listopad S, Scott EO, De Jong K, Krichmar JL, Ascoli GA. 
+
+For more details on simulating the models, please refer to this help page:
+http://hippocampome.org/csv2db/Help_Model_Simulation.php

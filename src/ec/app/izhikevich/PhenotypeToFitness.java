@@ -3,8 +3,10 @@ package ec.app.izhikevich;
 import ec.EvolutionState;
 import ec.Individual;
 import ec.app.izhikevich.evaluator.ModelEvaluatorMC;
+import ec.app.izhikevich.evaluator.MultiCompConstraintEvaluator;
 import ec.app.izhikevich.model.Izhikevich9pModel1C;
 import ec.app.izhikevich.model.Izhikevich9pModel3C;
+import ec.app.izhikevich.model.Izhikevich9pModel3C_L2;
 import ec.app.izhikevich.model.Izhikevich9pModel4C;
 import ec.app.izhikevich.model.Izhikevich9pModelMC;
 import ec.app.izhikevich.model.neurontypes.mc.EAGenes;
@@ -140,7 +142,10 @@ public final static String P_IDEAL_FITNESS_VALUE = "idealFitnessValue";
 			return new Izhikevich9pModelMC(2);
 		}
 		if(EAGenes.nComps==3){
-			return new Izhikevich9pModel3C(3);
+			if(MultiCompConstraintEvaluator.forwardConnectionIdcs[2]==0)
+				return new Izhikevich9pModel3C(3);
+			else
+				return new Izhikevich9pModel3C_L2(3);
 		}
 		if(EAGenes.nComps==4){
 			return new Izhikevich9pModel4C(4);

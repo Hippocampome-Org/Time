@@ -1,9 +1,15 @@
 package ec.app.izhikevich.evaluator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ec.app.izhikevich.inputprocess.InputMCConstraint;
 import ec.app.izhikevich.inputprocess.labels.MCConstraintAttributeID;
 import ec.app.izhikevich.inputprocess.labels.MCConstraintType;
+import ec.app.izhikevich.model.Izhikevich9pModel3C;
+import ec.app.izhikevich.model.Izhikevich9pModel3C_L2;
 import ec.app.izhikevich.model.Izhikevich9pModel3CwSyn;
+import ec.app.izhikevich.model.Izhikevich9pModel3CwSyn_L2;
 import ec.app.izhikevich.model.Izhikevich9pModel4CwSyn;
 import ec.app.izhikevich.model.Izhikevich9pModelMC;
 import ec.app.izhikevich.model.Izhikevich9pModelMCwSyn;
@@ -12,17 +18,22 @@ import ec.app.izhikevich.model.IzhikevichSolverMC;
 import ec.app.izhikevich.outputprocess.CarlMcSimData;
 import ec.app.izhikevich.spike.SpikePatternAdapting;
 import ec.app.izhikevich.util.GeneralUtils;
+import ec.app.izhikevich.util.ModelDBInterface;
 import ec.app.izhikevich.util.StatUtil;
 
 public class MultiCompConstraintEvaluator{
 /*
  * Remember, all error methods here return weighted 0-1 normed errors
  */
+	public static boolean TURN_OFF_MC_ERROR_DISPLAY=false;
 	public static int[] forwardConnectionIdcs;
 	Izhikevich9pModelMC model;
 	private boolean display;
 	private double[] synWeight;
 	private boolean rampRheo;
+	
+	private List<Float> SP_Is_hold;
+	private boolean saveSP_Is;
 	
 	private CarlMcSimData carlMcSimData;
 	private boolean externalSimulatorUsed;
@@ -32,6 +43,8 @@ public class MultiCompConstraintEvaluator{
 		this.display = display;
 		carlMcSimData = carlMcData;
 		externalSimulatorUsed = true;
+		SP_Is_hold=null;
+		saveSP_Is=false;
 	}	
 	
 	public MultiCompConstraintEvaluator(Izhikevich9pModelMC model, boolean display, double[] weight, boolean rampRheo) {
@@ -41,6 +54,8 @@ public class MultiCompConstraintEvaluator{
 		this.rampRheo = rampRheo;
 		carlMcSimData = null;
 		externalSimulatorUsed = false;
+		SP_Is_hold=null;
+		saveSP_Is=false;
 	}	
 	
 	public float calculateMcConstraintError(InputMCConstraint mcConstraintData){
@@ -53,7 +68,7 @@ public class MultiCompConstraintEvaluator{
 			}else{
 				double current_min = mcConstraintData.getAttribute(MCConstraintAttributeID.current_min);
 				double current_max = mcConstraintData.getAttribute(MCConstraintAttributeID.current_max);
-				float current_dur = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.current_duration);
+				float current_dur = (float) ModelDBInterface.MC_RHEO_DUR;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.current_duration);
 				double current_step = mcConstraintData.getAttribute(MCConstraintAttributeID.current_step);	
 				double rheo_diff = mcConstraintData.getAttribute(MCConstraintAttributeID.rheo_diff);	
 				consError = cons_weight * dendriticExcitabilityError(rheo_diff, current_min, current_max, current_dur, current_step);
@@ -66,8 +81,9 @@ public class MultiCompConstraintEvaluator{
 				consError = cons_weight * dendriticIRError();
 			}else{
 				float current_dur = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.current_duration);
+				current_dur = (float) ModelDBInterface.MC_IR_DUR;
 				float v_at_time = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.v_at_time);	
-				float current = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.current);
+				float current = (float) ModelDBInterface.MC_IR_I;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.current);
 				consError = cons_weight * dendriticIRError(current, current_dur, v_at_time);
 			}
 		}
@@ -77,11 +93,11 @@ public class MultiCompConstraintEvaluator{
 			if(externalSimulatorUsed){
 				consError = cons_weight * forwardSpikePropagationError();
 			}else{	
-				float dend_current_min = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_min);
+				float dend_current_min = (float) ModelDBInterface.MC_SP_I_MIN;;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_min);
 				float dend_current_max = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_max);
-				float dend_current_time_min = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_time_min);
-				float dend_current_duration = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_duration);
-				float dend_current_step = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_step);
+				float dend_current_time_min = (float) ModelDBInterface.MC_SP_TIME_MIN;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_time_min);
+				float dend_current_duration = (float) ModelDBInterface.MC_SP_DUR;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_duration);
+				float dend_current_step = (float)ModelDBInterface.MC_SP_I_STEP;//mcConstraintData.getAttribute(MCConstraintAttributeID.dend_current_step);
 				float dend_target_spike_freq = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.dend_target_spike_freq);
 				float spike_prop_rate_min = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.spike_prop_rate_min);		
 				
@@ -101,8 +117,8 @@ public class MultiCompConstraintEvaluator{
 			if(externalSimulatorUsed){
 				consError = cons_weight * synapticallyStimulatedEpspError((float)expEPSP[0], (float)expEPSP[1]);
 			}else{		
-				float timeConst = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.ampa_tau);
-				float simDur = (float)mcConstraintData.getAttribute(MCConstraintAttributeID.sim_duration);
+				float timeConst = ModelDBInterface.MC_EPSP_TC;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.ampa_tau);
+				float simDur = (float) ModelDBInterface.MC_EPSP_DUR;//(float)mcConstraintData.getAttribute(MCConstraintAttributeID.sim_duration);
 				consError = cons_weight * synapticallyStimulatedEpspError((float)expEPSP[0], (float)expEPSP[1], timeConst, simDur);
 			}
 		}
@@ -123,18 +139,29 @@ public class MultiCompConstraintEvaluator{
 		double[] iComp = model.getRheoBases();			
 	
 		for(int i=1;i<iComp.length;i++){
-			if(iComp[i]>iComp[0]){
+			if(iComp[i]>iComp[0] && iComp[i]-iComp[0]>0.1){
 				error += 0;
 			}else{
-				error += (float) StatUtil.calculateObsNormalizedError(iComp[0], iComp[i]);
+				error += (float) StatUtil.calculateObsNormalizedError(iComp[0]+0.1, iComp[i]);
 			}	
 			if(display) {
-				String displayString = "\nRheoErr(cmp#"+i+").\t\t\t"+
-										//GeneralUtils.formatThreeDecimal
-										(iComp[0])+"\t"+
-										//GeneralUtils.formatThreeDecimal
-										(iComp[i])+"\t"+
-										error;
+				String displayString = "";
+				if(!TURN_OFF_MC_ERROR_DISPLAY) {
+					displayString = "\nRheoErr(cmp#"+i+").\t\t\t"+
+							//GeneralUtils.formatThreeDecimal
+							(iComp[0])+"\t"+
+							//GeneralUtils.formatThreeDecimal
+							(iComp[i])+"\t"+
+							error;
+				}else {
+					displayString = "\nStep_Rheos(cmp#"+i+").\t\t\t"+
+							//GeneralUtils.formatThreeDecimal
+							(iComp[0])+"\t"+
+							//GeneralUtils.formatThreeDecimal
+							(iComp[i]);
+				}
+				
+				
 				System.out.print(displayString);
 			}	
 		}
@@ -177,13 +204,23 @@ public class MultiCompConstraintEvaluator{
 				error += (float) StatUtil.calculateObsNormalizedError(vDeflection[0], vDeflection[i]);
 			}	
 			if(display) {
-				String displayString = "\nIRErr(cmp#"+i+").\t("+
-										"-100"
-										//GeneralUtils.formatTwoDecimal(GeneralUtils.findMin(model.getRheoBases())-10)
-										+"pA)\t"+
-										GeneralUtils.formatTwoDecimal(vDeflection[0])+"\t"+
-										GeneralUtils.formatTwoDecimal(vDeflection[i])+"\t"+
-										error;
+				String displayString="";
+				if(!TURN_OFF_MC_ERROR_DISPLAY) {
+					displayString = "\nIRErr(cmp#"+i+").\t("+
+							I
+							//GeneralUtils.formatTwoDecimal(GeneralUtils.findMin(model.getRheoBases())-10)
+							+"pA)\t"+
+							GeneralUtils.formatTwoDecimal(vDeflection[0])+"\t"+
+							GeneralUtils.formatTwoDecimal(vDeflection[i])+"\t"+
+							error;
+				}else {
+					displayString = "\nIR_Vdefs(cmp#"+i+").\t("+
+							I
+							//GeneralUtils.formatTwoDecimal(GeneralUtils.findMin(model.getRheoBases())-10)
+							+"pA)\t"+
+							GeneralUtils.formatTwoDecimal(vDeflection[0])+"\t"+
+							GeneralUtils.formatTwoDecimal(vDeflection[i]);
+				}				
 				System.out.print(displayString);
 			}	
 		}
@@ -242,15 +279,44 @@ public class MultiCompConstraintEvaluator{
 														dend_current_step,
 														dend_target_spike_freq);
 			
-						
-			if(spikeCounts[1]<1) {
+			float dendFreq = spikeCounts[0]/(dend_current_duration/1000);			
+			float proprate = spikeCounts[1]/spikeCounts[0];
+			float targetProprate=0.5f;
+			
+			if(Float.isNaN(proprate)) {
+				error += 100;
+			}else {			
+				
+				if(dendFreq<25) {
+					targetProprate=1f-(dendFreq/100f);
+				}					
+				
+				if(proprate >= targetProprate) {
+					error +=0;
+				}else {
+					error += targetProprate-proprate;
+				}
+			}
+			
+			/*if(spikeCounts[1]<1) {
 				error +=  1;
 				//return error;
-			}
+			}*/
 			if(display) {
-				String displayString = "\nfrwSpkPrpErr(cmp#"+i+"->"+forwardConnectionIdcs[i]+").\t"+spikeCounts[0]+"(I:"+spikeCounts[2]+")\t"+spikeCounts[1]+"\t"+error;
+				String displayString = "";
+				if(!TURN_OFF_MC_ERROR_DISPLAY) {
+					displayString = "\nfrwSpkPrpErr(cmp#"+i+"->"+forwardConnectionIdcs[i]+").\t"+spikeCounts[0]+"(I:"+spikeCounts[2]+")\t"+spikeCounts[1]+"\t"+
+							"("+targetProprate+"-"+proprate+")\t"+error;
+				}else {
+					displayString = "\nfrwSpkPrp(cmp#"+i+"->"+forwardConnectionIdcs[i]+").\t"+spikeCounts[0]+"(I:"+spikeCounts[2]+")\t"+spikeCounts[1];
+				}
+				
 				System.out.print(displayString);
 			}
+			if(saveSP_Is) {
+				this.addSP_Is_hold(spikeCounts[2]);
+			}
+			
 		}
 		
 		return error;	
@@ -301,7 +367,7 @@ public class MultiCompConstraintEvaluator{
 			if(model_spike_pattern[fromCompIdx].getFiringFrequencyBasedOnSpikesCount() >= dend_target_spike_freq){
 				spikes[0] = model_spike_pattern[fromCompIdx].getNoOfSpikes();
 				spikes[1] = model_spike_pattern[toCompIdx].getNoOfSpikes();
-				if(display)
+				if(display || saveSP_Is)
 					spikes[2] = I;
 			//	model_spike_pattern[Izhikevich9pModel2CA.DEND_IDX].getSpikePatternData().displayForPlot();
 			//	System.out.println(I);
@@ -337,7 +403,7 @@ public class MultiCompConstraintEvaluator{
 		
 		for(int i=0;i<synWeight.length;i++){
 			double[] weight = new double[synWeight.length];
-					
+				//change RHS  to [0]	
 			weight[i]=synWeight[i];
 			modelwSyn.setWeight(weight);
 			
@@ -357,13 +423,19 @@ public class MultiCompConstraintEvaluator{
 			double peakVolt = model_spike_pattern[0].getSpikePatternData().getPeakVoltage(stepSize,simDur,stepSize);
 			double somaEpsp = (double)peakVolt - model.getvR()[0];
 			
-//			System.out.println(somaEpsp);
 		//	model_spike_pattern[Izhikevich9pModel2CAwSyn.SOMA_IDX].getSpikePatternData().displayForPlot();
 			
 			error += (float) StatUtil.calculateObsNormalizedError(expEPSPmin, expEPSPmax, somaEpsp);
 			if(display) {
-				String displayString = "\nSynStimEpspErr(syn#"+i+").\t("+expEPSPmin+","+expEPSPmax+")\t"+
-									GeneralUtils.formatTwoDecimal(somaEpsp)+"\t"+error;
+				String displayString ="";
+				if(!TURN_OFF_MC_ERROR_DISPLAY) {
+					 displayString = "\nSynStimEpspErr(syn#"+i+").\t("+expEPSPmin+","+expEPSPmax+")\t"+
+								GeneralUtils.formatTwoDecimal(somaEpsp)+"\t"+error;
+				}else {
+					 displayString = "\nSynStimEpsp(syn#"+i+").\t("+expEPSPmin+","+expEPSPmax+")\t"+
+								GeneralUtils.formatTwoDecimal(somaEpsp);
+				}
+				
 				System.out.print(displayString);
 			}	
 		}
@@ -395,7 +467,10 @@ public class MultiCompConstraintEvaluator{
 			return new Izhikevich9pModelMCwSyn(2);
 		}
 		if(model.getNCompartments()==3){
-			return new Izhikevich9pModel3CwSyn(3);
+			if(MultiCompConstraintEvaluator.forwardConnectionIdcs[2]==0)
+				return new Izhikevich9pModel3CwSyn(3);
+			else
+				return new Izhikevich9pModel3CwSyn_L2(3);
 		}
 		if(model.getNCompartments()==4){
 			return new Izhikevich9pModel4CwSyn(4);
@@ -558,5 +633,19 @@ public class MultiCompConstraintEvaluator{
 		}
 		
 		return error;		
+	}
+	
+	public void setSaveSP_Is_hold(boolean save) {
+		this.saveSP_Is=save;
+	}
+	public List<Float> getSP_Is_Hold() {
+		return this.SP_Is_hold;
+	}
+
+	public void addSP_Is_hold(float I) {
+		if(this.SP_Is_hold==null) {
+			this.SP_Is_hold=new ArrayList<Float>();
+		}
+		this.SP_Is_hold.add(I);
 	}
 }

@@ -1,0 +1,172 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 2,
+				"V" : 0
+			},
+			"sfa_linear_m0" : {
+				"W" : 2,
+				"V" : 0.296177375
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 27.7419
+			},
+			"n_sfa_isis0" : {
+				"W" : 0,
+				"V" : 3
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 13
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			eval:[fsl, pss, nbursts, bursts],
+			"current_duration" : 474.8387,
+			"pattern_class" : "PSTUT",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				"ca3 lmr targeting"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 31.61293
+			},
+			nbursts:{V:6, W:0},
+			bursts:{V:[{nspikes:2, b_w:15, pbi:41},
+						{nspikes:1, b_w:0, pbi:42},
+						{nspikes:2, b_w:21, pbi:49},
+						{nspikes:2, b_w:25, pbi:123},
+						{nspikes:1, b_w:0, pbi:67},
+						{nspikes:2, b_w:30}],
+					feat_w:{nspikes:0.50, b_w:0.1, pbi:0.4},
+					tot_w:1
+					},
+			"current" : {
+				"V" : [
+					500,
+					520
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 2.02083475954963
+			},
+			"sfa_linear_b0" : {
+				"W" : 0,
+				"V" : 1.068595718
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+	"parameter_ranges" : {
+"VT" : [
+			15, 30
+		],
+		"D" : [
+			0,
+			100
+		],
+		"W" : [
+			0,
+			1
+		],
+		"VMIN" : [
+			12, 13
+		],
+		"VR" : [
+			-68,
+			-67
+		],
+		"G": [
+         150,
+         200
+      ],
+      "P": [
+         0.01,
+         0.5
+      ],
+		"A" : [
+			0,
+			0.01
+		],
+		"B" : [
+			-100,
+			-50
+		],
+		"VPEAK" : [
+			78,
+			80
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"K" : [
+			0.5,
+			2
+		]
+	}
+}
+

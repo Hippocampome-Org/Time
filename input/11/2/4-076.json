@@ -1,0 +1,215 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [
+	{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 0.1
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 10
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"fsl",
+				"pss"
+			],
+			"current_duration" : 760,
+			"pattern_class" : "NASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				1,
+				"CA1 PPA quad"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 51.2
+			},
+			"current" : {
+				"V" : [
+					40,
+					60
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.2
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 0.4
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 27
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"fsl",
+				"pss"
+			],
+			"current_duration" : 764,
+			"pattern_class" : "NASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				2,
+				"CA1 ppa quad"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 9.1
+			},
+			"current" : {
+				"V" : [
+					90,
+					110
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.21
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+	"parameter_ranges" : {
+		 "VT": [
+         12,
+         25
+      ],
+      "D": [
+         -10,
+         400
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         2,
+         3
+      ],
+      "VR": [
+         -65,
+         -64
+      ],
+      "G" : [
+			150,
+			200
+		],
+		"P" : [
+			0.1,
+			0.5
+		],
+      "A": [
+         0,
+         0.2
+      ],
+      "B": [
+         -60,
+         10
+      ],
+      "VPEAK": [
+         61,
+         62
+      ],
+      "CM": [
+         10,
+         1500
+      ],
+      "K": [
+        4,
+        5
+      ]
+   }
+}

@@ -51,5 +51,9 @@ public enum PatternFeatureID {
 	rebound_VMax,
 	swa,
 	
-	period // for chaos
+	period, // for chaos
+	
+	b_w,
+	pbi,
+	b_nspikes// final analysis
 }

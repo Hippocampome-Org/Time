@@ -1,0 +1,253 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+      {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0.05,
+            "V": 15.316000000000031
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": 0.017463520297511016
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 30
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+		 "nbursts" :
+			{
+				"V" : 10,
+				"W" : 0.5
+			},
+			"bursts" :
+			{
+				"V" : [
+					{
+						"nspikes" : 6,
+						"b_w" : 34,
+						"pbi" : 27,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 2,
+						"b_w" : 27,
+						"pbi" : 57,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 4,
+						"b_w" : 54,
+						"pbi" : 40,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 3,
+						"b_w" : 31,
+						"pbi" : 52,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 4,
+						"b_w" : 56,
+						"pbi" : 44,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 2,
+						"b_w" : 17,
+						"pbi" : 36,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 3,
+						"b_w" : 44,
+						"pbi" : 49,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 4,
+						"b_w" : 63,
+						"pbi" : 45,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 2,
+						"b_w" : 20,
+						"pbi" : 48,
+						"pbi_vmin_offset" : 0
+					},
+					{
+						"nspikes" : 2,
+						"b_w" : 21,
+						"pbi_vmin_offset" : 0
+					}
+				],
+				"feat_w" :
+				{
+					"nsfa" : 0,
+					"nspikes" : 0.25,
+					"b_w" : 0.05,
+					"pbi" : 0.4,
+					"pbi_vmin_offset" : 0.3
+				},
+				"tot_w" : 0.8
+			},
+         "eval": [
+            "fsl",
+				"pss",
+				"bursts",
+				"nbursts"
+         ],
+         "current_duration": 869,
+         "pattern_class": "PSTUT.",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            "CA1 Neurogliaform (i) 3000"
+         ],
+         "fsl": {
+            "W": 0.05,
+            "V": 5.262999999999977
+         },
+         "current": {"V": [
+            490,
+            510
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "valid_max_v": {"V": 200},
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 2.537267625490411
+         },
+         "compartment": 0
+      },
+      {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0,
+            "V": 0.13400000000001455
+         },
+         "sfa_linear_m1": {
+            "W": 3,
+            "V": 0.028484257012474312
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 46
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+         "eval": [fsl,pss,
+            "n_sfa_isis1",
+                   ],
+         "current_duration": 869.762,
+         "pattern_class": "ASP.",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            1,
+            "CA1 Neurogliaform (i) 3000"
+         ],
+         "fsl": {
+            "W": 0,
+            "V": 1.3179999999999836
+         },
+         "current": {"V": [
+            690,
+            710
+         ]},
+         "pattern_weight": 0.5,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "valid_max_v": {"V": 200},
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 1.7599541079375138
+         },
+         "compartment": 0
+      }
+      
+   ],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+    "K" : [
+			2.0,
+			3.0
+		],
+		"A" : [
+			0.008,
+			0.014
+		],
+		"B" : [
+			10,
+			40
+		],
+		"D" : [
+			1,
+			100
+		],
+		"CM" : [
+			100,
+			400
+		],
+		"VR" : [
+			-64,
+			-63
+		],
+		"VMIN" : [
+			12,
+			13
+		],
+		"VT" : [
+			15,
+			25
+		],
+		"VPEAK" : [
+			74,
+			75
+		],
+		"G" : [
+			100,
+			400
+		],
+		"P" : [
+			0.01,
+			0.99
+		],
+		"W" : [
+			0,
+			1
+		]
+	}
+}

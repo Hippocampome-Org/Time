@@ -83,6 +83,8 @@ public class ECStatOutputReader {
 			
 			String[] lineHolders = new String[NSols*4];			
 			
+			//System.out.println("**test** Nsols: "+NSols);
+			
 			while(str!=null) {
 				str = br.readLine();
 				for(int i=1;i<lineHolders.length;i++){
@@ -91,6 +93,8 @@ public class ECStatOutputReader {
 				lineHolders[lineHolders.length-1]=str;				
 			}
 			
+			
+					
 			for(int i=0;i<NSols;i++){
 				StringTokenizer st = new StringTokenizer(lineHolders[i*4 + 2]);			
 				String token = null;
@@ -176,7 +180,7 @@ public class ECStatOutputReader {
 				lastButOne=lastLine;
 				lastLine=str;				
 			}
-			//System.out.println(lastButTwo);
+			//System.out.println(lastButOne+"--"+lastButTwo);
 			StringTokenizer st = new StringTokenizer(lastButOne);			
 			String token = null;
 			int i=0;

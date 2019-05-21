@@ -248,13 +248,13 @@ public class StatUtil {
 	public static double calculateObsNormalizedError(double observed, double model) {
 		//if(GeneralUtils.isCloseEnough(observed, model, 0.000001)) return 0;
 		double error = Math.abs(model - observed);
-		return logNorm(error);
-		/*
-		double error =  Math.abs(model);	
-		if(observed > 0) {
-			error = Math.abs(model - observed) / Math.abs(observed);
-		} 
+		
+	/*	if(observed < 0.0000001 && model < 0.0000001)
+			return 0;		
+		
+		error = Math.abs(model - observed) / ((Math.abs(observed+model)/2d));
 		*/
+		
 		
 		/*else if (model > 0){
 			error = Math.abs(model - observed) / Math.abs(model);
@@ -262,7 +262,21 @@ public class StatUtil {
 			error = 0;
 		}*/
 			//if(error > 100000) System.out.println(model);
+		//System.out.println(observed+"\t"+model+"\t"+error);
 		//return error;
+		
+		
+		return logNorm(error);
+	}
+	
+	public static double calculateRelativeError(double observed, double model) {
+		
+		return logNorm(Math.abs(observed - model));
+		/*if(observed > 0)
+			return Math.abs(observed - model)/observed;
+		else
+			return Math.abs(observed - model)/((observed+model)/2);*/
+		
 	}
 	
 	private static double logNorm(double error){

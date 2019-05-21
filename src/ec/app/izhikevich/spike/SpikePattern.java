@@ -3,6 +3,7 @@ package ec.app.izhikevich.spike;
 import java.util.ArrayList;
 
 import ec.app.izhikevich.model.Izhikevich9pModel;
+import ec.app.izhikevich.starter.ECJStarterV2;
 import ec.app.izhikevich.util.GeneralUtils;
 import ec.app.izhikevich.util.StatUtil;
 
@@ -152,8 +153,9 @@ public class SpikePattern {
 	
 	private double calculateAverageFiringFrequency() {	
 		if(spikeTimes.length <= 1) {
-			if(spikeTimes.length < 1) return 0;
-			else return 1.0d/(durationOfCurrentInjection*0.001);
+			return 0;
+			//if(spikeTimes.length < 1) return 0;
+			//else return 1.0d/(durationOfCurrentInjection*0.001);
 		}
 	//	double[] ISIs = this.getISIs();		
 		//average isi's
@@ -304,12 +306,30 @@ public class SpikePattern {
 	}		
 	
 	public boolean isValidSpikesPattern() {		
-		
-		if(spikeTimes.length < 1 ||
-				(spikeTimes[spikeTimes.length-1] - this.timeMin) > (this.durationOfCurrentInjection+50)) {
-			//System.out.println("&&&&&&&&&&");
-			return false;
-		}			
+		//GeneralUtils.displayArray(spikeTimes);
+		if(currentInjected > 0) {
+			if(spikeTimes.length < 1 ||
+					(spikeTimes[spikeTimes.length-1] - this.timeMin) > (this.durationOfCurrentInjection+100)) {
+				//System.out.println(spikeTimes[spikeTimes.length-1]+"&&&&&&&&&&"+this.durationOfCurrentInjection+this.timeMin+50);
+				/*
+				 * for I-F fitting : temporary.
+				 */
+				//if(!ECJStarterV2.IF_FITTING)
+					return false;
+			}	
+		}else {
+			if(spikeTimes.length < 1 
+		//			||	(spikeTimes[spikeTimes.length-1] - this.timeMin) > (this.durationOfCurrentInjection+this.timeMin+50)
+			){
+				//System.out.println(spikeTimes[spikeTimes.length-1]+"&&&&&&&&&&"+this.durationOfCurrentInjection+this.timeMin+50);
+				/*
+				 * for I-F fitting : temporary.
+				 */
+				//if(!ECJStarterV2.IF_FITTING)
+					return false;
+			}	
+		}
+				
 		return true;
 	}		
 	public double calculateAvgBelowVmin(double vMin) {

@@ -10,7 +10,6 @@ import ec.app.izhikevich.evaluator.qualifier.SpikePatternClassifier;
 import ec.app.izhikevich.inputprocess.InputSpikePatternConstraint;
 import ec.app.izhikevich.inputprocess.labels.BurstFeatureID;
 import ec.app.izhikevich.inputprocess.labels.PatternFeatureID;
-import ec.app.izhikevich.model.IzhikevichSolver;
 import ec.app.izhikevich.spike.BurstFeature;
 import ec.app.izhikevich.spike.PatternFeature;
 import ec.app.izhikevich.spike.PatternType;
@@ -30,11 +29,14 @@ public class SpikePatternEvaluatorV2{
 	double modelVmin;
 	double modelVr;
 	double modelVt;
+	double test;
 	
 	private boolean checkForPatternValidity;
 	private boolean display;
 	
 	public SpikePatternClassifier patternClassifier;
+	
+	public static final double SFA_SCALING_FOR_EXT_REF = 50;
 	
 	public SpikePatternEvaluatorV2(SpikePatternAdapting modelSpikePattern, 
 			InputSpikePatternConstraint expSpikePatternData, double[] patternRepWeights, 
@@ -184,14 +186,22 @@ public class SpikePatternEvaluatorV2{
 	        	return patternError;
 	        }
 	        //&& Math.abs(Float.MAX_VALUE - modelError)>10.0f
-	        if(checkForPatternValidity){
+	        
+	        boolean bypassValidityCheck=false;
+	        if(expSpikePatternData.getFeaturesToEvaluate().contains(PatternFeatureID.n_spikes) 
+       			 && 
+       		expSpikePatternData.getFeatures().get(PatternFeatureID.n_spikes).getValue()<2){
+	        	bypassValidityCheck=true;
+	        }
+	        if(checkForPatternValidity && !bypassValidityCheck){
 		        if(expSpikePatternData.getType() == PatternType.SPIKES ){  			       
 					    //if(!modelSpikePattern.isValidSpikesPattern(modelVmin, modelVr)) { if(display) {  System.out.println("**Invalid SPIKEs Pattern**");	   }					    	
-		        	if(!modelSpikePattern.isValidVoltageTrace(-80, 40)) 
+		        	if(!modelSpikePattern.isValidVoltageTrace(-120, 100)) 
 		        	{ if(display) {  System.out.println("**Invalid voltage ** SPEvaluatorV2:calculatePatternError()");	   }					    	
 			       	return patternError;				    	
 		        	}  
-		        	if(!modelSpikePattern.isValidSpikesPattern()) { if(display) {  System.out.println("**Invalid SPIKEs Pattern** SPEvaluatorV2:calculatePatternError()");	   }					    	
+		        	if(!modelSpikePattern.isValidSpikesPattern()) { 
+		        		if(display) {  System.out.println("**Invalid SPIKEs Pattern** SPEvaluatorV2:calculatePatternError()");	   }					    	
 					       	return patternError;				    	
 					    } 
 					    /*else{
@@ -201,9 +211,18 @@ public class SpikePatternEvaluatorV2{
 					    	}				    		
 					        patternValidityErrorVrest = spikesBelowVrestError(modelVr);
 					    }*/
-			        	if(modelSpikePattern.getISIs() == null ) { if(display) {System.out.println("**Null ISIs** SPEvaluatorV2:calculatePatternError()");      }	
+		        	/*
+		        	 * I-F fitting nspikes: temporary
+		        	 */
+		        	//if(!ECJStarterV2.IF_FITTING) {
+		        	
+		        		 if(!(modelSpikePattern.getCurrentInjected()<0)) {
+		        		 if(modelSpikePattern.getISIs() == null ) { if(display) {System.out.println("**Null ISIs** SPEvaluatorV2:calculatePatternError()");      }	
 			        		return patternError;
-			        	}		        					         	
+			        	}}
+		        	 
+		        	//}
+			        			        					         	
 				 }
 		        	   
 	        }/*else{
@@ -330,7 +349,7 @@ public class SpikePatternEvaluatorV2{
 			}
 			
 			double error = rBoundFeatWeight
-					*	NormalizedErrorObsNormed(feature, modelReboundVmax);
+					*	NormalizedErrorObsNormed(feature, modelReboundVmax, false);
 			displayRoutine(PatternFeatureID.rebound_VMax,feature, modelReboundVmax, error);
 			return error;
 		}
@@ -340,7 +359,7 @@ public class SpikePatternEvaluatorV2{
 			//double minError = 0;
 			//double maxError = expSpikePatternData.getCurrentDuration();
 			double error = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.fsl)
-								*	NormalizedErrorObsNormed(feature, modelSpikePattern.getFSL());
+								*	NormalizedErrorObsNormed(feature, modelSpikePattern.getFSL(), false);
 			displayRoutine(PatternFeatureID.fsl,feature, modelSpikePattern.getFSL(), error);
 			return error;
 		}
@@ -349,7 +368,7 @@ public class SpikePatternEvaluatorV2{
 			//double minError = 0;
 			//double maxError = expSpikePatternData.getCurrentDuration();
 			double error = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.swa)
-								*	NormalizedErrorObsNormed(feature, modelSpikePattern.getSwa());
+								*	NormalizedErrorObsNormed(feature, modelSpikePattern.getSwa(), false);
 			displayRoutine(PatternFeatureID.swa,feature,modelSpikePattern.getSwa(), error);
 			return error;
 		}
@@ -359,7 +378,7 @@ public class SpikePatternEvaluatorV2{
 			//double maxError = expSpikePatternData.getCurrentDuration();
 			double error = //patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_spikes)
 								//*	
-					NormalizedErrorObsNormed(feature, modelSpikePattern.getNoOfSpikes());
+					NormalizedErrorObsNormed(feature, modelSpikePattern.getNoOfSpikes(), false);
 			displayRoutine(PatternFeatureID.n_spikes,feature, modelSpikePattern.getNoOfSpikes(), error);
 			return error;
 		}
@@ -370,7 +389,7 @@ public class SpikePatternEvaluatorV2{
 	//	double minError = 0;
 	//	double maxError = expSpikePatternData.getCurrentDuration();
 		double error = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.pss)
-				*	NormalizedErrorObsNormed(feature, modelSpikePattern.getPSS());	
+				*	NormalizedErrorObsNormed(feature, modelSpikePattern.getPSS(), false);	
 		displayRoutine(PatternFeatureID.pss,feature, modelSpikePattern.getPSS(), error);
 		return error;
 	}
@@ -387,7 +406,7 @@ public class SpikePatternEvaluatorV2{
 	public double NburstsError() {
 		PatternFeature feature = expSpikePatternData.getnBursts();
 		double error = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.nbursts)
-				*	NormalizedErrorObsNormed(feature, modelSpikePattern.getBurstPattern().getNBursts());
+				*	NormalizedErrorObsNormed(feature, modelSpikePattern.getBurstPattern().getNBursts(), false);
 		displayRoutine(PatternFeatureID.nbursts,feature, modelSpikePattern.getBurstPattern().getNBursts(), error);
 		return error;
 	}
@@ -462,79 +481,98 @@ public class SpikePatternEvaluatorV2{
 	}
 	
 public double sfaErrorObsNormed() {		
-		//System.out.println("****"+sfa()+"****");
+		
 		//int nPieceWiseParmsExp = expSpikePatternData.getSpikePatternClass().getnPieceWiseParms();	    
 		int nPieceWiseParmsModel = patternClassifier.getSpikePatternClass().getnPieceWiseParms(); 	
 		double error = 0;
 		SolverResultsStat modelStats = null;
-		if(nPieceWiseParmsModel>0){ // ASP, NASP, X
-			modelStats = patternClassifier.getSolverResultsStats()[nPieceWiseParmsModel-1];
-		}else{ // ASP error for other comps. for example, TSWB 
-			patternClassifier.calculateAdaptationForNonSP(0);
-			modelStats = patternClassifier.getSolverResultsStats()[1]; // idx 1 for linear regression
-		}
-		
-		int modelNsfaISIs1 = 1 + modelStats.getBreakPoint(); //0-based idx ; hence +1
-		int modelNsfaISIs2 = modelSpikePattern.getISIs().length - modelNsfaISIs1; // remaining
-		
-		if(patternClassifier.getSpikePatternClass().contains(SpikePatternComponent.RASP)){
-			modelNsfaISIs1 = modelStats.getBreakPoint();
-			modelNsfaISIs2 = modelSpikePattern.getISIs().length - modelNsfaISIs1;
+		/*if(!(expSpikePatternData.getFeaturesToEvaluate().contains(PatternFeatureID.n_sfa_isis0) && 
+				!(patternClassifier.getSpikePatternClass().contains(SpikePatternComponent.ASP)|| 
+						patternClassifier.getSpikePatternClass().contains(SpikePatternComponent.NASP))
+				))*/
+		//part of RASP.ASP fix
+		if( !(expSpikePatternData.getFeaturesToEvaluate().contains(PatternFeatureID.n_sfa_isis0) && 
+			!(expSpikePatternData.getFeaturesToEvaluate().contains(PatternFeatureID.n_sfa_isis1))
+					))
+			//System.out.println("********?????????********");
+		{   //avoid calculating error when constraint only has RASP.
 			
-			modelNsfaISIs2 = modelNsfaISIs2 - 
-					(int)((double)patternClassifier.getSpikePatternClass().classificationParameters.get(ClassificationParameterID.N_ISI_cut_RASP));
-		}
-		
-		double[] model = new double[] {modelStats.getM1(), modelStats.getC1(), modelNsfaISIs1,
-				modelStats.getM2(), modelStats.getC2(), modelNsfaISIs2
-				};
-		PatternFeature[] exp = new PatternFeature[] {expSpikePatternData.getSfaLinearM1(),					
-				expSpikePatternData.getSfaLinearb1(),
-				expSpikePatternData.getNSfaISIs1(),
+				if(nPieceWiseParmsModel>0){ // ASP, NASP, X
+					modelStats = patternClassifier.getSolverResultsStats()[nPieceWiseParmsModel-1];
+				}else{ // ASP error for other comps. for example, TSWB 
+					patternClassifier.calculateAdaptationForNonSP(0);
+					modelStats = patternClassifier.getSolverResultsStats()[1]; // idx 1 for linear regression
+				}
 				
-				expSpikePatternData.getSfaLinearM2(),
-				expSpikePatternData.getSfaLinearb2(),				
-				expSpikePatternData.getNSfaISIs2()
-				};
-		
-		//System.out.println(patternClassifier.getDynamicFeatWeightMatrix().size());
-		float sfa1Weight = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis1);
-		float sfa2weight = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis2);
-		
-		for(int i=0;i<6; i++){
-			//SFA 1
-			if(i==0){//m1
-				error += sfa1Weight * NormalizedErrorObsNormed(exp[i], model[i]);
-				continue;
-			}
-			if(i==1 ){//b1
-				error += sfa1Weight *  NormalizedErrorObsNormed(exp[i], model[i]);
-				continue;
-			}			
-			if(i==2){//nsfaisis1				
-				error += sfa1Weight *	 NormalizedErrorObsNormed(exp[i], model[i]);
-				continue;
-			}
-			// SFA 2
-			if(i==3){//m2
-				error += sfa2weight * NormalizedErrorObsNormed(exp[i], model[i]);
-				continue;
-			}
-			if(i==4 ){//b2
-				error += sfa2weight *  NormalizedErrorObsNormed(exp[i], model[i]);
-				continue;
-			}
-			if(i==5){//nsfaisis 2
-				error += sfa2weight *	 NormalizedErrorObsNormed(exp[i], model[i]);
-				continue;
-			}
+				int modelNsfaISIs1 = 1 + modelStats.getBreakPoint(); //0-based idx ; hence +1
+				int modelNsfaISIs2 = modelSpikePattern.getISIs().length - modelNsfaISIs1; // remaining
+				
+				if(patternClassifier.getSpikePatternClass().contains(SpikePatternComponent.RASP)){
+					modelNsfaISIs1 = modelStats.getBreakPoint();
+					modelNsfaISIs2 = modelSpikePattern.getISIs().length - modelNsfaISIs1;
 					
+					modelNsfaISIs2 = modelNsfaISIs2 - 
+							(int)((double)patternClassifier.getSpikePatternClass().classificationParameters.get(ClassificationParameterID.N_ISI_cut_RASP));
+				}
+				
+				double[] model = new double[] {modelStats.getM1(), modelStats.getC1(), modelNsfaISIs1,
+						modelStats.getM2(), modelStats.getC2(), modelNsfaISIs2
+						};
+				PatternFeature[] exp = new PatternFeature[] {expSpikePatternData.getSfaLinearM1(),					
+						expSpikePatternData.getSfaLinearb1(),
+						expSpikePatternData.getNSfaISIs1(),
+						
+						expSpikePatternData.getSfaLinearM2(),
+						expSpikePatternData.getSfaLinearb2(),				
+						expSpikePatternData.getNSfaISIs2()
+						};
+				
+				//System.out.println(patternClassifier.getDynamicFeatWeightMatrix().size());
+				float sfa1Weight = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis1);
+				float sfa2weight = patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis2);
+				//System.out.println("******,,,,,"+sfa1Weight+"-----"+sfa2weight);
+				for(int i=0;i<6; i++){
+					//System.out.println(""+error);
+					if(sfa1Weight>500f) {
+						//this means pattern class has stut/swb for a pure SP target class
+						error +=sfa1Weight;
+						break;
+					}
+					//SFA 1
+					if(i==0){//m1
+						
+						error += sfa1Weight * NormalizedErrorObsNormed(exp[i], model[i], true);
+						//System.out.print(error+"\t");	
+						continue;
+					}
+					if(i==1 ){//b1
+						error += sfa1Weight *  NormalizedErrorObsNormed(exp[i], model[i], false);
+						continue;
+					}			
+					if(i==2){//nsfaisis1				
+						error += sfa1Weight *	 NormalizedErrorObsNormed(exp[i], model[i], false);
+						continue;
+					}
+					// SFA 2
+					if(i==3){//m2
+						error += sfa2weight * NormalizedErrorObsNormed(exp[i], model[i], true);
+						continue;
+					}
+					if(i==4 ){//b2
+						error += sfa2weight *  NormalizedErrorObsNormed(exp[i], model[i], false);
+						continue;
+					}
+					if(i==5){//nsfaisis 2
+						error += sfa2weight *	 NormalizedErrorObsNormed(exp[i], model[i], false);
+						continue;
+					}
+						
+				}
+				//System.out.println();
+				if(display) {
+					displayRoutineForSFA(exp,model,	error);
+				}
 		}
-		
-		if(display) {
-			displayRoutineForSFA(exp,model,	error);
-		}
-		
 		if(expSpikePatternData.getFeaturesToEvaluate().contains(PatternFeatureID.n_sfa_isis0)){
 			PatternFeature[] exp_rasp = new PatternFeature[] {
 								expSpikePatternData.getSfaLinearM0(), 
@@ -552,9 +590,17 @@ public double sfaErrorObsNormed() {
 			}
 			
 			for(int i=0;i<3;i++){
-				error += patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis0)
+				//System.out.println(""+error);
+				if(i<1) {
+					error += patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis0)
 							*	 
-						NormalizedErrorObsNormed(exp_rasp[i], model_rasp[i]);
+						NormalizedErrorObsNormed(exp_rasp[i], model_rasp[i], true);
+				}else {
+					error += patternClassifier.getDynamicFeatWeightMatrix().get(PatternFeatureID.n_sfa_isis0)
+							*	 
+						NormalizedErrorObsNormed(exp_rasp[i], model_rasp[i], false);
+				}
+				
 			}	
 			if(display) {
 				displayRoutineForRASP(exp_rasp,model_rasp,	error);
@@ -567,6 +613,17 @@ public double sfaErrorObsNormed() {
 		
 	}
 	
+public double sfa_m0() {
+	return patternClassifier.getSpikePatternClass().classificationParameters.get(ClassificationParameterID.M_RASP);
+}
+
+public double sfa_b0() {
+	return patternClassifier.getSpikePatternClass().classificationParameters.get(ClassificationParameterID.B_RASP);
+}
+
+public double sfa_nISI0() {
+	return patternClassifier.getSpikePatternClass().classificationParameters.get(ClassificationParameterID.N_ISI_cut_RASP);
+}
 public double sfa_m1() {		
 	
 	//int nPieceWiseParmsExp = expSpikePatternData.getSpikePatternClass().getnPieceWiseParms();	    
@@ -628,8 +685,10 @@ public double fsl() {
 public double pss() {
 	return modelSpikePattern.getPSS();
 }
-
-public int n_ISIs(int component){
+public double nspikes() {
+	return modelSpikePattern.getNoOfSpikes();
+}
+public int n_ISIs(int component, boolean containsRASP){
 	int nPieceWiseParmsModel = patternClassifier.getSpikePatternClass().getnPieceWiseParms(); 	
 	SolverResultsStat modelStats = null;
 	if(nPieceWiseParmsModel>0){ // ASP, NASP, X
@@ -640,6 +699,14 @@ public int n_ISIs(int component){
 	
 	int modelNsfaISIs1 = 1 + modelStats.getBreakPoint(); //0-based idx ; hence +1
 	int modelNsfaISIs2 = modelSpikePattern.getISIs().length - modelNsfaISIs1; // remaining	
+		
+	if(containsRASP){
+		modelNsfaISIs1 = modelStats.getBreakPoint();
+		modelNsfaISIs2 = modelSpikePattern.getISIs().length - modelNsfaISIs1;
+		
+		modelNsfaISIs2 = modelNsfaISIs2 - 
+				(int)((double)patternClassifier.getSpikePatternClass().classificationParameters.get(ClassificationParameterID.N_ISI_cut_RASP));
+	}
 	
 	if(component == 1)
 		return modelNsfaISIs1;
@@ -647,7 +714,27 @@ public int n_ISIs(int component){
 		return modelNsfaISIs2;
 	return -7;
 }
-	public double burstFeatureError() {
+
+public double getNBursts() {
+	if(modelSpikePattern.getBurstPattern()==null) {
+		return 0;
+	}
+	return modelSpikePattern.getBurstPattern().getNBursts();
+}
+
+public double getBW(int idx) {	
+	return	modelSpikePattern.getBurstPattern().getBW(idx);	
+}
+
+public double getPBI(int idx) {	
+	return	modelSpikePattern.getBurstPattern().getIBI(idx);	
+}
+
+public double getBurstNspikes(int idx) {	
+	return	modelSpikePattern.getBurstPattern().getNSpikes(idx);
+}
+
+public double burstFeatureError() {
 		BurstFeature expBurstFeature = expSpikePatternData.getBurstFeatures();
 		ArrayList<HashMap<BurstFeatureID, Double>> expBurstFeatures = expBurstFeature.getValue();
 	
@@ -785,23 +872,35 @@ public int n_ISIs(int component){
 	}
 	
 	private double NormalizedErrorObsNormed(PatternFeature feature, 
-			double modelValue) {
+			double modelValue, boolean sfa) {
 		/*
 		 * the w here is manual weight assigned in JSON. only for special cases!! like 3-000 to get D.ASP.
 		 * shouldn't be confused with dynamic W calculated in spikepatternclassifier
 		 * Typically, w is 0 in JSON, so that this manual weight is ignored!
 		 */
 		double w = feature.getWeight();
+		double scale = 1;
+		
 		if(GeneralUtils.isCloseEnough(w, 0, 0.001)){
 			w=1;
 		}
+		if(ECJStarterV2.TURN_OFF_CLASSIFIER==true) { //this overrides all!
+			w=1;
+		}
+		if(sfa) {
+			scale = SFA_SCALING_FOR_EXT_REF;
+			if(w<2.5) {// to scale m and c
+				w=2;
+			}
+		}
+		
 		if(feature.isRange()) {
-			return w*StatUtil.calculateObsNormalizedError(feature.getValueMin(), 
-																	feature.getValueMax(), 
-																	modelValue
+			return w*StatUtil.calculateObsNormalizedError(scale*feature.getValueMin(), 
+																	scale*feature.getValueMax(), 
+																	scale*modelValue
 																	);
 		}else {
-			return w*StatUtil.calculateObsNormalizedError(feature.getValue(), 
+			return w*StatUtil.calculateObsNormalizedError(scale*feature.getValue(), 
 					modelValue
 					);
 		}

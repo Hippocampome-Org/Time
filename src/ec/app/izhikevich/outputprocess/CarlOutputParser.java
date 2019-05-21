@@ -49,12 +49,28 @@ public class CarlOutputParser {
 		//JSONObject jsonObj = readASPISIs();
 		JSONObject multi_comp_sim = phenTypeObject.getJSONObject("multi_comp_sim");
 		
-		mcSimData = new CarlMcSimData(jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.ramp_rheos.name())),
-				jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.v_defs.name())),
-				jsonArrayToFloat(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.spike_proped.name())),
-				jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.epsps.name()))				
-				);
-		
+		if(multi_comp_sim.has("epspsAll_0")) {
+			double[] epsps = jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.epsps.name()));
+			double[][] epspsAll = new double[epsps.length][epsps.length+1];
+			
+			for(int i=0;i<epsps.length;i++) {
+				epspsAll[i] = jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.epspsAll.name()+"_"+i));
+			}
+			
+			mcSimData = new CarlMcSimData(jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.ramp_rheos.name())),
+					jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.v_defs.name())),
+					jsonArrayToFloat(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.spike_proped.name())),
+					epsps,
+					epspsAll
+					);
+			
+		}else {
+			mcSimData = new CarlMcSimData(jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.ramp_rheos.name())),
+					jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.v_defs.name())),
+					jsonArrayToFloat(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.spike_proped.name())),
+					jsonArrayToDouble(multi_comp_sim.getJSONArray(CarlMcSimDataLabels.epsps.name()))				
+					);
+		}		
 		return mcSimData;
 	}
 	private CarlSpikePattern constructCarlSomaPattern(JSONObject jObject){

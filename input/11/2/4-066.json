@@ -1,0 +1,280 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [{
+			"time_min" : 100,
+			"pss" : {
+				"W" : 0,
+				"V" : 283
+			},
+
+			"eval" : [
+				"fsl",
+				"pss", "n_spikes"
+			],
+			"current_duration" : 483.788,
+			"pattern_class" : "X.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				"CA1 OR-LM (i)1202"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 200
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 1
+			},
+			"current" : {
+				"V" : [
+					40,
+					60
+				]
+			},
+			"pattern_weight" : 1,
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		}, {
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 7.307999999999993
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 8
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"fsl",
+				"pss"
+			],
+			"current_duration" : 483.788,
+			"pattern_class" : "NASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				1,
+				"CA1 OR-LM (i)1202"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 30.389999999999986
+			},
+			"current" : {
+				"V" : [
+					90,
+					110
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.19635017364524
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 18.37700000000001
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 12
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"fsl",
+				"pss"
+			],
+			"current_duration" : 506.091,
+			"pattern_class" : "NASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				2,
+				"CA1 OR-LM (i)1202"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 40.10400000000004
+			},
+			"current" : {
+				"V" : [
+					140,
+					160
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.1762797715271
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		}, {
+			"time_min" : 200,
+			"eval" : [
+				"rebound_VMax"
+			],
+			"current_duration" : 500,
+			"pattern_class" : "X",
+			"type" : "RBOUNDV",
+			"INCLUDE" : "false",
+			"IDX_NOTE" : [
+				3,
+				"CA1 OR-LM "
+			],
+			"rebound_VMax" : {
+				"W" : 0,
+				"V" : 7
+			},
+			"current" : {
+				"V" : [
+					-210,
+					-190
+				]
+			},
+			"pattern_weight" : 1,
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -500,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 1000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+	"parameter_ranges" : {
+		"VT" : [
+			5,
+			15
+		],
+		"D" : [
+			-10,
+			200
+		],
+		"W" : [
+			0,
+			1
+		],
+		"VMIN" : [
+			5,
+			13
+		],
+		"VR" : [
+			-59,
+			-57
+		],
+		"G" : [
+			25,
+			200
+		],
+		"P" : [
+			0.1,
+			0.2
+		],
+		"A" : [
+			0,
+			0.2
+		],
+		"B" : [
+			0,
+			30
+		],
+		"VPEAK" : [
+			139,
+			140
+		],
+		"CM" : [
+			50,
+			800
+		],
+		"K" : [
+			0.5,
+			3
+		]
+	}
+}

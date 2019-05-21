@@ -1,0 +1,121 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+      
+      {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": 0.156853205
+         },
+         "pss": {
+            "W": 0,
+            "V": 6.64
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 6
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+         "eval": [
+            "n_sfa_isis1",
+            "fsl",
+            "pss"
+         ],
+         "current_duration": 211.30,
+         "pattern_class": "ASP.",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            " "
+         ],
+         "fsl": {
+            "W": 0,
+            "V":5.40
+         },
+         "current": {"V": [
+            290,
+            310
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 1.046896406
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      }
+   ],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         10,
+         15
+      ],
+      "D": [
+         -20,
+         200
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         0,
+         1
+      ],
+      "VR": [
+         -70,
+         -65
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0,
+         0.05
+      ],
+      "B": [
+         -50,
+         50
+      ],
+      "VPEAK": [
+         60,
+         61
+      ],
+      "CM": [
+         10,
+         800
+      ],
+      "K": [
+         0.5,
+         6
+      ]
+   }
+}

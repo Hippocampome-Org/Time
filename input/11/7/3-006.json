@@ -1,0 +1,189 @@
+{
+"parameter_ranges" : {
+		"K" : [
+			4,
+			6
+		],
+		"A" : [
+			0,
+			0.02
+		],
+		"B" : [
+			-50,
+			25
+		],
+		"D" : [
+			0,
+			300
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"VR" : [
+			-71,
+			-70
+		],
+		"VMIN" : [
+			10,
+			12
+		],
+		"VT" : [
+			14,
+			20
+		],
+		"VPEAK" : [
+			60,
+			62
+		],
+		"G": [
+         150,
+         200
+      ],
+      "P": [
+         0.01,
+         0.5
+      ],
+		"W" : [
+			0,
+			1
+		]
+	},
+
+spike_pattern_constraints:[					
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "ca2 basket"],
+					compartment:0,
+					type:SPIKES,	
+					pattern_class:"D.PSTUT",
+					current:{V:[390, 410]},
+					current_duration:426,						
+					time_min:100,
+					valid_max_v:{V:200},										
+					fsl:{V:130, W:0},
+					pss:{V:144, W:0},
+					nbursts:{V:3, W:0},
+					n_spikes:{V:-1, W:0},
+					swa:{V:-20, W:100},
+					eval:[fsl, pss, nbursts, bursts],
+					"sfa_linear_m1": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis1": {
+						"W": 0,
+						"V": -1
+					},
+					"sfa_linear_b1": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_m2": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis2": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_b2": {
+						"W": 0,
+						"V": 0
+					},
+					bursts:{V:[{nspikes:2, b_w:49, pbi:65},
+								{nspikes:2, b_w:13.6, pbi:31.8},
+								{nspikes:2, b_w:14.5}],
+					feat_w:{nspikes:0.50, b_w:0.25, pbi:0.25},
+					tot_w:1
+					},
+					pattern_weight:1.00
+					},
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "ca2 basket "],
+					compartment:0,
+					type:SPIKES,	
+					pattern_class:"PSTUT",
+					current:{V:[550, 650]},
+					current_duration:428,						
+					time_min:100,
+					valid_max_v:{V:200},										
+					fsl:{V:3, W:0},
+					pss:{V:18, W:0},
+					nbursts:{V:3, W:0},
+					n_spikes:{V:-1, W:0},
+					swa:{V:-20, W:100},
+					eval:[fsl, pss, nbursts, bursts],
+					"sfa_linear_m1": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis1": {
+						"W": 0,
+						"V": -1
+					},
+					"sfa_linear_b1": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_m2": {
+						"W": 0,
+						"V": 0
+					 },
+					"n_sfa_isis2": {
+						"W": 0,
+						"V": 0
+					},
+					"sfa_linear_b2": {
+						"W": 0,
+						"V": 0
+					},
+					bursts:{V:[{nspikes:17, b_w:205.4, pbi:30.77},
+								{nspikes:10, b_w:120.8, pbi:37.7},
+								{nspikes:2, b_w:9.2}],
+					feat_w:{nspikes:0.50, b_w:0.25, pbi:0.25},
+					tot_w:1
+					},
+					pattern_weight:1.00
+					}
+			],
+pattern_repair_weights:[1.0, 0.00, 0.00],
+"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}]
+}

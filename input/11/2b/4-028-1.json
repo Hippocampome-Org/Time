@@ -1,0 +1,192 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+	  {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V":0
+         },
+         "pss": {
+            "W": 0,
+            "V": 101.59
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 4
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+         "eval": [
+            "n_sfa_isis1",
+            "fsl",
+            "pss"
+         ],
+         "current_duration": 367.02,
+         "pattern_class": "NASP",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            " "
+         ],
+         "fsl": {
+            "W": 0,
+            "V":10.11
+         },
+         "current": {"V": [
+            590,
+            610
+         ]},
+         "pattern_weight": 0.5,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 2.10
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      },
+	  {
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 3,
+				"V" : 0
+			},
+			"sfa_linear_m0" : {
+				"W" : 0,
+				"V" : 0.28
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 6.29
+			},
+			"n_sfa_isis0" : {
+				"W" : 0,
+				"V" : 3
+			},
+			"n_sfa_isis1" : {
+				"W" : 2,
+				"V" : 18
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis0",
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 359.38,
+			"pattern_class" : "RASP.ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				" "
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 1.55
+			},
+			"current" : {
+				"V" : [
+					790,
+					810
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.164
+			},
+			"sfa_linear_b0" : {
+				"W" : 0,
+				"V" : 0.891
+			},
+			"compartment" : 0
+		}
+   ],
+   "multi_comp_constraints": [
+      {"type": "EXCITABILITY"},
+      {"type": "INP_RES"},
+      {"type": "PROPAGATION"},
+      {"type": "SYN_STIM_EPSP"}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         15,
+         25
+      ],
+      "D": [
+          0,
+         500
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         6,
+         7
+      ],
+      "VR": [
+         -66,
+         -65
+      ],
+      "G": [
+         5,
+         200
+      ],
+      "P": [
+         0.1,
+         0.9
+      ],
+      "A": [
+         0.001,
+         0.03
+      ],
+      "B": [
+         0,
+         50
+      ],
+      "VPEAK": [
+         50,
+         51
+      ],
+      "CM": [
+         10,
+         500
+      ],
+      "K": [
+         8,
+         12
+      ]
+   }
+}

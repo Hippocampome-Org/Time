@@ -120,6 +120,42 @@ public class Izhikevich9pModel extends IzhikevichModel{
 	   return rheo;	         
 	  }
 
+	public double  getRheo_rb(float currDur, double i_max, double i_min, double incStep)
+	   {
+	     double rheo = Float.MAX_VALUE;
+	     double holdImin = i_min;
+	     int nSpikes = 0;
+	     while(i_min <= i_max)    {	
+	    	rheo = (i_min + i_max) / 2;	
+			this.setInputParameters(rheo, 100, currDur);
+			
+			IzhikevichSolver solver = new IzhikevichSolver(this);
+			//solver.setsS(1.0);
+			SpikePatternAdapting modelSpikePattern = solver.getSpikePatternAdapting();			
+			if(modelSpikePattern == null){				
+				i_max = rheo - incStep;   
+				continue;
+				//return Float.MAX_VALUE;	 										
+			}
+			
+			nSpikes = modelSpikePattern.getNoOfSpikes();
+			
+			/*if( nSpikes == 1){
+				return rheo;
+			}else{*/
+				 if (nSpikes >= 1){          
+					 i_min = rheo + incStep;  
+		         } else {                                                        
+		             i_max = rheo - incStep;   
+		         }		       
+			//}			
+	     } 
+	   if(GeneralUtils.isCloseEnough(holdImin, i_min, 1.0)) {
+		   return -Float.MAX_VALUE;
+	   }
+	   return rheo;	         
+	  }
+	
 	public double  getRampRheo(float currDur, double iMin, double iMax, double incStep)
 	   {
 		double rheo = Float.MAX_VALUE;
@@ -193,8 +229,11 @@ public class Izhikevich9pModel extends IzhikevichModel{
 			return Float.MAX_VALUE;	 										
 		}		
 		
-		double voltage_min = modelSpikePattern.getSpikePatternData().getMinVoltage(timeMin, timeMin+Idur, 1);
-		double voltage_max = modelSpikePattern.getSpikePatternData().getPeakVoltage(timeMin, timeMin+Idur, 1);
+		//double voltage_min = modelSpikePattern.getSpikePatternData().getMinVoltage(timeMin, timeMin+Idur, 1);
+		//double voltage_max = modelSpikePattern.getSpikePatternData().getPeakVoltage(timeMin, timeMin+Idur, 1);
+		
+		double voltage_min = modelSpikePattern.getSpikePatternData().getMinVoltage(timeMin+Idur-50, timeMin+Idur-5, 1);
+		double voltage_max = modelSpikePattern.getSpikePatternData().getPeakVoltage(timeMin+Idur-50, timeMin+Idur-5, 1);
 		
 		float def1 = (float) Math.abs(voltage_max - this.vR);
 		float def2 = (float) Math.abs(this.vR - voltage_min);

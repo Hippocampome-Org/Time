@@ -1,0 +1,210 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [
+	{
+			"time_min" : 100,
+			"current" : {
+				"V" : [48, 52]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 100,
+			"pattern_class" : "X.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [98, 102]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 1.6
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 100,
+			"pattern_class" : "X.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [148, 152]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 4.3
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 100,
+			"pattern_class" : "RASP.NASP",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [198, 202]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 5.7
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 100,
+			"pattern_class" : "RASP.NASP",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 2,
+				"V" : 0.164
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 8.5
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 6
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 100,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 8
+			},
+			"current" : {
+				"V" : [
+					245,
+					255
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.27
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [
+	],
+	"parameter_ranges" : {
+		"VT" : [
+			25, 45
+		],
+		"D" : [
+			0,
+			500
+		],
+		"W" : [
+			0,
+			1
+		],
+		"VMIN" : [
+			15, 20
+		],
+		"VR" : [
+			-78,
+			-77
+		],
+		"G" : [
+			150,
+			200
+		],
+		"P" : [
+			0.01,
+			0.5
+		],
+		"A" : [
+			0,
+			0.01
+		],
+		"B" : [
+			-50,
+			50
+		],
+		"VPEAK" : [
+			80,
+			81
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"K" : [
+			0.1,
+			3
+		]
+	}
+}

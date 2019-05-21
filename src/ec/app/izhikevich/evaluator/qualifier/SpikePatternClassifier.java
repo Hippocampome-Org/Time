@@ -37,7 +37,7 @@ public class SpikePatternClassifier {
 	
 	private static final double SWA_FACTOR = 5d;
 	private static final double TSTUT_PRE_FACTOR = 2.5d;
-	private static final double TSTUT_POST_FACTOR = 1.5d;
+	private static final double TSTUT_POST_FACTOR = 1.5;//1.019d;
 	private static final double MIN_TSTUT_FREQ = 25;
 	
 	private static final int TSTUT_ISI_CNT = 4;
@@ -140,6 +140,10 @@ public class SpikePatternClassifier {
 		if(somaSpikePattern.getISIsStartingFromIdx(startIdxForTstut)!=null){
 			if(somaSpikePattern.getISIsStartingFromIdx(startIdxForTstut).length == 1){
 				patternClass.addComponent(SpikePatternComponent.X);
+				/*
+				 * SP-SR (i)-0302	TSTUT.	TSTUT.X.
+					CA1 Neurogliaform (i) 3000	D.	D.X.
+				 */
 			}
 			if(somaSpikePattern.getISIsStartingFromIdx(startIdxForTstut).length > 1){
 				/*
@@ -343,6 +347,7 @@ public class SpikePatternClassifier {
 	
 	public void populateNullWeights(){
 		dynamicFeatWeightMatrix.put(PatternFeatureID.fsl, 1f);	
+		dynamicFeatWeightMatrix.put(PatternFeatureID.n_sfa_isis0, 1f);
 		dynamicFeatWeightMatrix.put(PatternFeatureID.n_sfa_isis1, 1f);
 		dynamicFeatWeightMatrix.put(PatternFeatureID.n_sfa_isis2, 1f);			
 		dynamicFeatWeightMatrix.put(PatternFeatureID.pss,1f);		
@@ -366,6 +371,41 @@ public class SpikePatternClassifier {
 		}else
 			return false;
 	}
+	
+	public double getDelayFactor() {
+		double isiFilt=somaSpikePattern.getISI0();
+		if(somaSpikePattern.getISIs().length>1){
+			isiFilt = (somaSpikePattern.getISI0()+somaSpikePattern.getISI(1))/2d;
+		}
+		
+		return somaSpikePattern.getFSL() / isiFilt;
+	}
+	
+	public double getStutFactor() {
+		double stutFactor = 0;
+		
+		double[] isis = somaSpikePattern.getISIs();
+		int maxISIidx = GeneralUtils.findMaxIdx(isis);
+		double maxISI = isis[maxISIidx];	
+		
+		if(maxISIidx == isis.length-1) {
+			//last ISI is max ISI
+			return 0;
+		}		
+		if(maxISIidx>0){
+			double pre_maxISI = isis[maxISIidx-1];
+			stutFactor += maxISI / pre_maxISI;			
+		}else {//CA1 radiatum - fig 11G - NASP original - should be PSTUT
+			return 0; //PSTUT_FACTOR = 4
+		}
+		
+				
+		double post_maxISI = isis[maxISIidx+1];		
+		//System.out.print("\t"+startIdx+","+maxISI+","+post_maxISI+","+factor);
+		stutFactor += maxISI/post_maxISI;
+		return stutFactor;
+	}
+	
 	private float delayWeight(SpikePatternClass targetClass){
 		float fslWeight = 0;		
 		if(targetClass.contains(SpikePatternComponent.D)){
@@ -566,10 +606,7 @@ public class SpikePatternClassifier {
 			return;
 		}
 	}
-private void populateSolverSlopes(){
-	
-	
-	
+private void populateSolverSlopes(){	
 	patternClass.addClassificationParameter(ClassificationParameterID.B_1p, solverStats[0].getC1());
 	
 	patternClass.addClassificationParameter(ClassificationParameterID.M_2p, solverStats[1].getM1());
@@ -647,7 +684,7 @@ public void calculateAdaptationForNonSP(int n){
 			
 			LeastSquareSolverUtil l = new LeastSquareSolverUtil(X, Y);	
 			SolverResultsStat solverStatLocal = l.solveFor2Parms(0, 1);
-			
+			//System.out.println("RASP slope:  "+solverStatLocal.getM1());
 			if(solverStatLocal.getM1()>SLOPE_THRESHOLD_FT){
 				patternClass.removeLastAddedComponent();				
 				patternClass.addComponent(SpikePatternComponent.RASP);
@@ -688,9 +725,18 @@ public void calculateAdaptationForNonSP(int n){
 			}
 		
 		if(targetClass.containsSP()){
+			if(!targetClass.containsSTUT()&&!targetClass.containsSWB()) {
+				if(patternClass.containsSTUT()||patternClass.containsSWB()) {
+					dynamicFeatWeightMatrix.put(PatternFeatureID.n_sfa_isis1, 1000f);
+					dynamicFeatWeightMatrix.put(PatternFeatureID.n_sfa_isis2, 1000f);
+					return;
+				}
+			}
 		//	if(patternClass.containsSTUT() || patternClass.cont)
 			int modelNpwParms = patternClass.getnPieceWiseParms();
 			int targetNpwParms = targetClass.getnPieceWiseParms();
+			
+			//System.out.println(modelNpwParms+" "+targetNpwParms);
 			
 			if(SFA_WEIGHT_DET_SCENARIOS[modelNpwParms][targetNpwParms] == 0){
 				dynamicFeatWeightMatrix.put(PatternFeatureID.n_sfa_isis1, defaultWeight);
@@ -743,7 +789,9 @@ public void calculateAdaptationForNonSP(int n){
 		if(maxISIidx>0){
 			double pre_maxISI = isis[maxISIidx-1];
 			factor += maxISI / pre_maxISI;			
-		}		
+		}else {//CA1 radiatum - fig 11G - NASP original - should be PSTUT
+			factor =1; //PSTUT_FACTOR = 4
+		}
 		double post_maxISI = isis[maxISIidx+1];		
 		//System.out.print("\t"+startIdx+","+maxISI+","+post_maxISI+","+factor);
 		factor += maxISI/post_maxISI;
@@ -898,7 +946,7 @@ public void calculateAdaptationForNonSP(int n){
 		return idx;
 	}
 	
-	public static void main(String[] args) {
+	public static void main_org(String[] args) {
 		//String fileName = args[0];
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("spike.csv"));
@@ -955,5 +1003,28 @@ public void calculateAdaptationForNonSP(int n){
 	}
 
 	
+	public static void main(String[] args) {		
+			
+			double current =250;
+			double duration=100;
+					
+			double swa =2;			
+		
+			//ca1pyr-IF
+			//double[] spikeTimes = new double[] {15.98,30.75,48.3,71.38,97.7,129.7,176.2,211.1,260.5,304.2,368.15,432};
+			//dggran-IF
+			double[] spikeTimes = new double[] {8.3,14.8,24.07,	37,55.56,72.22,	91.67};
 
+			SpikePatternAdapting sp = new SpikePatternAdapting(spikeTimes, current, 0, duration);
+			SpikePatternClassifier classifier = new SpikePatternClassifier(sp);
+			StatAnalyzer.display_stats = false;
+			classifier.classifySpikePattern_EXP(swa, false);
+			ClassificationParameterID[] parms = ClassificationParameterID.values();
+			for(ClassificationParameterID parm:parms)
+				System.out.print("\t"+parm);
+			System.out.println();
+			classifier.getSpikePatternClass().display(parms);
+		
+		
+	}
 }

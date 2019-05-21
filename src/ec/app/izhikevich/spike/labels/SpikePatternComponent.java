@@ -7,6 +7,7 @@ public enum SpikePatternComponent {
 	TSTUT,PSTUT,
 	TSWB,PSWB,
 	RASP,
+	RBS,
 	X, 
 	EMPTY;
 	//public Map<PatternFeatureID, Double> properties = new HashMap<>();

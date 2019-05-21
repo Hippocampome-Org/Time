@@ -19,7 +19,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import ec.app.izhikevich.inputprocess.labels.PatternFeatureID;
-import ec.app.izhikevich.spike.labels.PhenoTypeCategory;
 import ec.app.izhikevich.spike.labels.SpikePatternClass;
 import ec.app.izhikevich.spike.labels.SpikePatternComponent;
 
@@ -33,6 +32,7 @@ enum ExcelLabel{
 	PMID(4), FIG_N(5), I(6), I_DUR(7), PATTERN_CLASS(16), ALT_CLASS(17), FSL(18), PSS(19), SWA(20), N_ISI(22), 
 	//sfa stuff
 	AI(38),
+	ISI_AV(44),
 	M_2_1(46), C_2_1(47),							//2 parm						// for spikePatternTrace class
 	M_3_1(48), C_3_1(49), C_3_2(50),			// 3 parm
 	M_4_1(52), C_4_1(53), M_4_2(54), C_4_2(55),	// 4 parm
@@ -42,7 +42,8 @@ enum ExcelLabel{
 	 */
 	
 	F_12(58), F_12c(59), F_23(60), F_23c(61), F_34(62), F_34c(63),
-	P_12(64), P_23(65), P_34(66), P_12uv(67),  P_23uv(68), P_34uv(69), subtypes(117), Phen_cat(118), J_class(121)
+	P_12(64), P_23(65), P_34(66), P_12uv(67),  P_23uv(68), P_34uv(69), subtypes(117), Phen_cat(118), J_class(121),
+	N_ISI_cut_3p(131), N_ISI_cut_4p(132)
 	,ISI1(151)
 	;
 	
@@ -143,7 +144,7 @@ enum ExcelLabel{
 public class EphysData {		 
 		private static final String file_pfx="input/AK/";
 		private static final String file1 = "Firing pattern parameters-subtypes-12 - SV - 10_27_2016.xlsx";		
-	//	private static final String file1 = "Firing pattern parameters-subtypes-new ones.xlsx";	
+		//private static final String file1 = "Firing pattern parameters-subtypes-16.xlsx";	
 		private static final int MAX_N_COLS = 1000;
 		
 		public static Map<NeuronType, List<SpikePatternTrace>> readExcelData(){

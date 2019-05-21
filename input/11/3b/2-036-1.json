@@ -1,0 +1,146 @@
+{
+"parameter_ranges" : {
+		"K" : [
+			0.1,
+			1
+		],
+		"A" : [
+			0,
+			0.01
+		],
+		"B" : [
+			-10,
+			10
+		],
+		"D" : [
+			-10,
+			50
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"VR" : [
+			-60,
+			-59
+		],
+		"VMIN" : [
+			7,
+			8
+		],
+		"VT" : [
+			12,
+			14
+		],
+		"VPEAK" : [
+			63,
+			64
+		],
+		"G" : [
+			150,
+			200
+		],
+		"P" : [
+			0.01,
+			0.5
+		],
+		"W" : [
+			0,
+			10
+		]
+	},
+
+spike_pattern_constraints:[							
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "", ""],
+					pattern_class:ASP.NASP,
+					compartment:0,
+					type:SPIKES,	
+					current:{V:[390, 410]},
+					current_duration:980.25,						
+					time_min:100,
+					valid_max_v:{V:200},															
+					
+					fsl:{V:0.96, W:0.0},
+					pss:{V:20.62, W:0.0},
+					n_spikes:{V:52, W:0.0},
+					
+					sfa_linear_m1:{V:0.029, W:1.5}, 
+					sfa_linear_b1:{V:1.183, W:1.5},
+					n_sfa_isis1:{V:31, W:0.0},					
+					
+					sfa_linear_m2:{V:0, W:0}, 
+					sfa_linear_b2:{V:2.116, W:1.5},
+					n_sfa_isis2:{V:20, W:0.0},
+					
+					eval:[fsl, pss, n_sfa_isis1],
+					pattern_weight:1.00
+					},
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[0, "ASP", ""],
+					pattern_class:ASP,
+					compartment:0,
+					type:SPIKES,	
+					current:{V:[150, 300]},
+					current_duration:1009.46,						
+					time_min:100,
+					valid_max_v:{V:200},															
+					
+					fsl:{V:48, W:0.0},
+					pss:{V:9.5, W:0.0},
+					n_spikes:{V:12, W:0.0},
+					
+					sfa_linear_m1:{V:0.08, W:1.5}, 
+					sfa_linear_b1:{V:0.982, W:1.5},
+					n_sfa_isis1:{V:11, W:0.0},					
+					
+					sfa_linear_m2:{V:0, W:0}, 
+					sfa_linear_b2:{V:0, W:1.5},
+					n_sfa_isis2:{V:0, W:0.0},
+					
+					eval:[fsl, pss, n_sfa_isis1],
+					pattern_weight:1.00
+					}
+			],
+pattern_repair_weights:[1.0, 0.00, 0.00],
+"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	]
+}

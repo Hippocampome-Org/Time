@@ -74,7 +74,7 @@ public class PhenotypeConstraintEvaluator{
 		float _2SpikeSomaticRheo = model.determine2SpikeSomaticRheobase(iDur, iMin, iMax, iStep);
 		
 		double[] newIs = new double[model.getNCompartments()];
-		newIs[0] = _2SpikeSomaticRheo+iStep;		
+		newIs[0] =  _2SpikeSomaticRheo+iStep;		
 		model.setInputParameters(newIs, 0d, (double)iDur);
 		
 		IzhikevichSolverMC solver = new IzhikevichSolverMC(model);

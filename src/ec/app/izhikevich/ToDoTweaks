@@ -1,0 +1,19 @@
+#######DONE####### root-finding solver in event handler?
+SpikePatternData -- DvDt criterion  : IMPOTANT -- apparently, different calculation of criterion for different vpeak, vrest combinations:::
+
+Gaussian mutation -- verify normalization
+parameter boundaries & unbounded mutation?
+---
+changes:
+
+RegularSpikingevaluator.getfitness() {
+if(model_spike_times.length <= 1 ) fitness = -Float.MAX_VALUE;
+}
+----
+
+To add a new spike pattern:
+
+1. Extend SpikePattern and implement own methods
+2. Define a method in IzhikevichSolver to create that XXXspikePattern object
+3. Implement IzhikevichEvaluator with own getFitness method
+    3.1 Use XXXxpikePattern object inside getFitness();

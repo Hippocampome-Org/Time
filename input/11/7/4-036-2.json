@@ -1,0 +1,216 @@
+{
+   "pattern_repair_weights": [
+      1,
+      0,
+      0
+   ],
+   "spike_pattern_constraints": [
+      {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0,
+            "V": 14.555267
+         },
+         "sfa_linear_m1": {
+            "W": 2,
+            "V": 0.0381323110292867
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 28
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 0
+         },
+         "eval": [
+            "n_sfa_isis1",
+            "pss",
+            "fsl"
+         ],
+         "current_duration": 447.269102,
+         "pattern_class": "ASP.",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            1,
+            " CA1 Axo-Axonic (i)2232"
+         ],
+         "fsl": {
+            "W": 0,
+            "V": 6.15158000000002
+         },
+         "current": {"V": [
+            490,
+            510
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 0
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 2.17478452227898
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      },
+	  {
+         "time_min": 100,
+         "sfa_linear_m2": {
+            "W": 0,
+            "V": 0
+         },
+         "pss": {
+            "W": 0.05,
+            "V": 19.418594
+         },
+         "sfa_linear_m1": {
+            "W": 0,
+            "V": 0.553838347601704
+         },
+         "n_sfa_isis1": {
+            "W": 0,
+            "V": 4
+         },
+         "n_sfa_isis2": {
+            "W": 0,
+            "V": 8
+         },
+		"nbursts":{V:2, W:0.15},
+		bursts:{V:[{nspikes:5, b_w:36.79, pbi:48.11, pbi_vmin_offset:6},
+		       {nspikes:8, b_w:339.6}
+					],
+			feat_w:{nsfa:0, nspikes:0.40, b_w:.30, pbi:0.25, pbi_vmin_offset:0.05},
+			tot_w:0.60
+		},
+         "eval": [            
+            "pss",
+            "fsl", n_sfa_isis1
+         ],
+         "current_duration": 459.984614,
+         "pattern_class": "D.ASP.NASP",
+         "type": "SPIKES",
+         "INCLUDE": "true",
+         "IDX_NOTE": [
+            0,
+            " CA1 Axo-Axonic (i)2232"
+         ],
+         "fsl": {
+            "W": 0.20,
+            "V": 16.0377
+         },
+         "current": {"V": [
+            290,
+            310
+         ]},
+         "pattern_weight": 1,
+         "sfa_linear_b2": {
+            "W": 0,
+            "V": 8.57139450013614
+         },
+         "sfa_linear_b1": {
+            "W": 0,
+            "V": 0.378497199569872
+         },
+         "valid_max_v": {"V": 200},
+         "compartment": 0
+      }
+      
+      
+   ],
+   "multi_comp_constraints": [
+      {
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+   ],
+   "parameter_ranges": {
+      "VT": [
+         14,
+         20
+      ],
+      "D": [
+         0,
+         100
+      ],
+      "W": [
+         0,
+         1
+      ],
+      "VMIN": [
+         9,
+         10
+      ],
+      "VR": [
+         -65.5,
+         -64.5
+      ],
+      "G": [
+         150,
+         200
+      ],
+      "P": [
+         0.01,
+         0.5
+      ],
+      "A": [
+         0.001,
+         0.02
+      ],
+      "B": [
+         -10,
+         20
+      ],
+      "VPEAK": [
+         64,
+         65
+      ],
+      "CM": [
+         10,
+         1500
+      ],
+      "K": [
+         2,
+         4
+      ]
+   }
+}

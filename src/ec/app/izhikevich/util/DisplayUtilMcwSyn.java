@@ -14,6 +14,7 @@ import ec.app.izhikevich.inputprocess.labels.PatternFeatureID;
 import ec.app.izhikevich.model.Izhikevich9pModel;
 import ec.app.izhikevich.model.Izhikevich9pModel1C;
 import ec.app.izhikevich.model.Izhikevich9pModel3C;
+import ec.app.izhikevich.model.Izhikevich9pModel3C_L2;
 import ec.app.izhikevich.model.Izhikevich9pModel4C;
 import ec.app.izhikevich.model.Izhikevich9pModelMC;
 import ec.app.izhikevich.model.neurontypes.mc.EAGenes;
@@ -21,20 +22,21 @@ import ec.app.izhikevich.model.neurontypes.mc.OneNeuronInitializer;
 import ec.app.izhikevich.resonate.Bifurcation;
 import ec.app.izhikevich.starter.ECJStarterV2;
 
-public class DisplayUtilMcwSyn {		
+public class DisplayUtilMcwSyn {	
+	static boolean userdefined=false;
 	static boolean displayOnlyFitness = false;
 	static boolean writeBestParmsAsCSV = true;
 	static boolean displayParms = true;
 	static boolean displayErrors = true;	
-	static boolean plotVtraces = true;	
+	static boolean plotVtraces = false;	
 	public static final boolean displayPatternForExternalPlot = false;
 	
 	private static String VOLTAGE_FILENAME_PFX;
 	
-	static int nComp;
+	public static int nComp;
 	public static int nPops = 1;
 	
-	private static int[] forConnIdcs;// = new int[] {0,0};//new int[]{0,0,0};;//new int[] {0,0,0,2};//
+	public static int[] forConnIdcs;// = new int[] {0,0};//new int[]{0,0,0};;//new int[] {0,0,0,2};//
 	//public static int fitnessLine;
 	
 	public static int nJobs;
@@ -42,18 +44,26 @@ public class DisplayUtilMcwSyn {
 	public static String opFolder;
 	public static boolean iso_comp;
 	public static int forceTrial;
-	
+	public static int startIDX;
+	public static float fitThresh;
+	public static int forceSubpop;
 	static {
 		StatAnalyzer.display_stats = false;		
 		String phen_category = ECJStarterV2.Phen_Category;
 		String phen_num = ECJStarterV2.Phen_Num;
 		String Neur = ECJStarterV2.Neur;//"N2";		
 		iso_comp = ECJStarterV2.iso_comp;
-		String exp = "0"; 
+		String exp = "2"; 
+		startIDX = 0;
+		forceTrial =0; //set to -1 to go through all ECJ output files under "output/<primary_input>/exp"
+		forceSubpop = -1;
 		
-		forceTrial =-1;
+		fitThresh=-100.04f;
 		
 		nComp = ECJStarterV2.N_COMP;
+		if(forceTrial>-1 && nComp==1) {
+			plotVtraces = true;
+		}
 		forConnIdcs = ECJStarterV2.CONN_IDCS;
 				 
 		
@@ -68,18 +78,24 @@ public class DisplayUtilMcwSyn {
 	}
 	
 	public static void main(String[] args) {
-		
+		System.out.println(opFolder);
 		File file = new File("output/"+opFolder);
 		File[] files = file.listFiles();
 		int jCount =0;
-		for(File f: files){
-			if(f.getName().endsWith(".Full"))
-				jCount++;
-		}
-		nJobs = jCount;
+		
+		if(!userdefined) {
+			for(File f: files){
+				if(f.getName().endsWith(".Full"))
+					jCount++;
+			}
+			nJobs = jCount;
+		}else
+			nJobs=1;
+		
+		//nJobs=100;
 		
 		
-		if(!displayOnlyFitness && nPops ==1){
+		if(!displayOnlyFitness && nPops ==1 && !userdefined){
 			int trial = getBestTrial(nJobs, opFolder);
 		}
 	
@@ -92,7 +108,7 @@ public class DisplayUtilMcwSyn {
 		//double[] nGens = new double[nJobs];
 		int idx = 0;
 		if(!ECJStarterV2.MULTI_OBJ)
-		for(int i=0;i<nJobs;i++)
+		for(int i=startIDX;i<nJobs;i++)
 		{
 			//if(i<=70) continue;
 			idx = i;
@@ -106,8 +122,15 @@ public class DisplayUtilMcwSyn {
 				System.out.println("******************************************************************");
 			}
 			if(nComp==1 || nPops ==1){
-				double[] parms = readBestParms(opFolder, idx);				
-				//runWithUserParmValues();
+				
+				double[] parms =null;
+				if(!userdefined)
+					parms=readBestParms(opFolder, idx);	
+				if(userdefined) {
+					runWithUserParmValues();
+					break;
+				}
+					
 				if(displayOnlyFitness){
 					System.out.print(i+"\t");
 				}
@@ -121,13 +144,21 @@ public class DisplayUtilMcwSyn {
 				}
 			}else{
 				double[][] parms = readBestParmsS(opFolder, nPops);				
-				//runWithUserParmValues();				
+				//runWithUserParmValues();		
+				
 				for(int j=0;j<nPops;j++){
+					if(forceSubpop>-1) {
+						j=forceSubpop;	
+					}
 					if(displayOnlyFitness){
 						System.out.print(i+"\t");
 					}
+					System.out.print("\n\n***subpop  "+j);
 					runPrimary(idx, parms[j], opFolder+"/"+idx, displayParms, displayErrors, plotVtraces);
 					writeParmsSIntoFile(parms, opFolder);
+					if(forceSubpop>-1) {
+						break;
+					}
 				}
 		}
 		}
@@ -140,30 +171,7 @@ public class DisplayUtilMcwSyn {
 				+"\tMax: "+GeneralUtils.findMax(nGens));
 		*/
 		//int[] js = {39,33};
-		if(ECJStarterV2.MULTI_OBJ)			
-		for(int i=0;i<nJobs;i++)		
-		{
-			//if(i<7) continue;
-			//int i=js[0];
-			if(!displayOnlyFitness){
-				System.out.println("\n******************************************************************");
-				System.out.println("******************************************************************\t"+i);
-				System.out.println("******************************************************************");	
-			}
-			int nObj = ModelEvaluatorWrapper.INPUT_SPIKE_PATTERN_CONS.length; //dummy for reading pareto file
-			double[][] parms = readParmsOfParetoFront(opFolder, i, nObj);
-			
-			System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");	
-			System.out.println(parms.length+" solutions on Pareto Front");
-			System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");	
-			for(int j=0;j<parms.length;j++)
-			{
-			//	int j=js[1];
-				System.out.println("\t\t\t\t\\\\\\\\\\\\\\\\Soln. "+j +"////////////");
-				runPrimary(i, parms[j], opFolder+"/"+i+"_"+j, displayParms, displayErrors, plotVtraces);
-			}
-			System.out.println("End of pareto Front\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-		}
+		
 	}
 
 	private static ArrayList<double[]> readAllParms(int nJobs){
@@ -239,7 +247,8 @@ public class DisplayUtilMcwSyn {
         		String newFileName = "output/"+opFolder+"/bestAll.csv";
         		File fl = new File(newFileName);
         		if(!fl.exists()) {
-        			append=false;//fl.createNewFile();
+        			append=false;
+        			//fl.createNewFile();
         		
         		}
 			FileWriter fw = new FileWriter(newFileName, append);
@@ -255,9 +264,9 @@ public class DisplayUtilMcwSyn {
 			fw.write(","+genes.getVMIN()[0]);
 			fw.write(","+genes.getVPEAK()[0]);
 			
-			fw.write(","+genes.getI()[0]);
-			fw.write(","+_class+","+fitness+"\n");
-			
+			//fw.write(","+genes.getI()[0]);
+			//fw.write(","+_class+","+fitness+"\n");
+			fw.write(","+fitness+"\n");
 			fw.flush();
 			fw.close();
 				
@@ -270,30 +279,34 @@ public class DisplayUtilMcwSyn {
 		 Izhikevich9pModelMC model = getRightInstanceForModel();        
 		 float fitness=0;
 		 String _class="";
-		 
+	//	 double vt = -36.44;
+	//	 double k=2.5;
 	        EAGenes genes = new EAGenes(parms, iso_comp);        
 	        model.setK(genes.getK());
+	       // model.setK(new double[] {k,k});
 			model.setA(genes.getA());
 			model.setB(genes.getB());
 			model.setD(genes.getD());	
 			model.setcM(genes.getCM());
 			model.setvR(genes.getVR());
 			model.setvT(genes.getVT());		
+		//	model.setvT(new double[] {vt, vt});
 			model.setvMin(genes.getVMIN());	
 	        model.setvPeak(genes.getVPEAK());
 	        model.setG(genes.getG()); 
 	        model.setP(genes.getP());   
 	        double[] currents = genes.getI();
-	        //currents[0] = 290;
+	        //currents[0] = 562;
 	        //currents[1] = currents[0] + 200;
 	  //      float[] newCurrents = new float[currents.length];
 	   //     for(int i=0;i<newCurrents.length;i++)		
 	  //      		newCurrents[i] = currents[i];
 	       
-	        double[] weights = new double[model.getNCompartments()-1];//genes.getW();
-	        for(int wi=0;wi<weights.length;wi++){
+	       // double[] weights = new double[model.getNCompartments()-1];//genes.getW();
+	      /*  for(int wi=0;wi<weights.length;wi++){
 	        	weights[wi]=1;
-	        }
+	        }*/
+	        double[] weights = genes.getW();
 	        
 	        ModelEvaluatorMC evaluator = new ModelEvaluatorMC(model,
 	        									ModelEvaluatorWrapper.INPUT_SPIKE_PATTERN_CONS,
@@ -303,6 +316,7 @@ public class DisplayUtilMcwSyn {
 	        									currents, weights);    
 	        evaluator.setRampRheo(false);
 	        if(displayErrors || displayOnlyFitness){
+	        	evaluator.setSaveModelPattern(true);
 	        	if(displayOnlyFitness){
 	        		evaluator.setDisplayAll(false);	
 	        		evaluator.setDisplayOnlyClass(true);
@@ -311,7 +325,10 @@ public class DisplayUtilMcwSyn {
 	        	}
 	        	//evaluator.setDisplayForPlotIdx(0);
 				 fitness = evaluator.getFitness();	
+				 System.out.println(fitness);
 				 _class = evaluator.getSpEvalHolder().patternClassifier.getSpikePatternClass().toString();
+				 
+				 				 
 				if(displayOnlyFitness){
 					System.out.print(
 							"\t"+fitness+"\t");					
@@ -319,13 +336,24 @@ public class DisplayUtilMcwSyn {
 				//System.out.println();
 				
 				//evaluator.get
-				double[] spikeTimes = evaluator.getModelSomaSpikePatternHolder().getISIs();
-				spikeTimes = GeneralUtils.roundOff(spikeTimes);
-				GeneralUtils.displayArray(spikeTimes);
+				for(int i=0;i<currents.length;i++) {
+					try {
+					double[] spikeTimes = evaluator.getModelSpikePatternHolder().get(i)[0].getISIs();
+					
+					spikeTimes = GeneralUtils.roundOff(spikeTimes);
+					
+					GeneralUtils.displayArray(spikeTimes);
+					}catch(Exception e) {
+						System.out.println("\nnull spikes in DisplauUtil");
+					}
+				}
+				
 	        }	        		
 		
 	        if(drawPlots){
-	        		drawPlots( model,  currents,  evaluator);
+	        	if((!(fitThresh>0) && fitness<fitThresh)) {}
+	        	else
+	        		drawPlots( model,  currents,  evaluator, opFolder, currents.length);
 	        }
 			if(displayParms) {
 				for(int idx=0;idx<model.getNCompartments();idx++){
@@ -339,15 +367,23 @@ public class DisplayUtilMcwSyn {
 				//System.out.println();
 				//GeneralUtils.displayArrayUnformatWithSpace(parms);
 			}
-			if(writeBestParmsAsCSV) {
+			
+			String _cls1 = evaluator.spEvalHolders.get(0).patternClassifier.getSpikePatternClass().toString();
+			//String _cls2 = evaluator.spEvalHolders.get(1).patternClassifier.getSpikePatternClass().toString();
+			//String _cls3 = evaluator.spEvalHolders.get(2).patternClassifier.getSpikePatternClass().toString();
+			// System.out.println(_cls1+"  ********************"+ _cls2);
+			if(_cls1.equals("RASP.NASP.")) {
 				writeBestModelAndClassAsCsv( trial, parms,  _class,  fitness, 
 						 true );
 			}
-					
+			/*if(writeBestParmsAsCSV) {
+				writeBestModelAndClassAsCsv( trial, parms,  _class,  fitness, 
+						 true );
+			}*/					
 	}
 	
-	private static void drawPlots(Izhikevich9pModelMC model, double[] currents, ModelEvaluatorMC evaluator) {
-		
+	private static void drawPlots(Izhikevich9pModelMC model, double[] currents, ModelEvaluatorMC evaluator, String _opFolder, int nScens) {
+		System.out.println("drawing plot");
 			//float I = currents[0];
 			double[][] Is = null;
 			double[] Idurs = null;
@@ -365,8 +401,8 @@ public class DisplayUtilMcwSyn {
 				}
 				
 				//*** similarly additional mc currents
-				double[] somaCurrents = new double[currents.length +4];
-				double[] dend1Currents = new double[currents.length +4];
+				double[] somaCurrents = new double[currents.length +10];
+				double[] dend1Currents = new double[currents.length +10];
 			    for(i=0;i<currents.length;i++){
 			    	somaCurrents[i] = currents[i];//somatic scenarios
 			    	dend1Currents[i]=0; //no dend current for somatic scenarios
@@ -414,25 +450,33 @@ public class DisplayUtilMcwSyn {
 				Is[0]=currents;
 			}
 			
-			double[]  times = evaluator.getModelSomaSpikePatternHolder().getModelSpikePatternData().getTime();
-			double[]  vs = evaluator.getModelSomaSpikePatternHolder().getModelSpikePatternData().getVoltage();
+			for(int i=0;i<nScens;i++) {
+				double[]  times = evaluator.getModelSpikePatternHolder().get(i)[0].getModelSpikePatternData().getTime();
+				double[]  vs = evaluator.getModelSpikePatternHolder().get(i)[0].getModelSpikePatternData().getVoltage();
+				
+				File tempFileT = new File(VOLTAGE_FILENAME_PFX+"_t"+i);
+				File tempFileV = new File(VOLTAGE_FILENAME_PFX+"_v"+i);
+				
+				GeneralFileWriter.write(tempFileT.getAbsolutePath(), times);
+				GeneralFileWriter.write(tempFileV.getAbsolutePath(), vs);
+			}
 			
-			BrianInvoker invoker = new BrianInvoker(opFolder, currents.length);//new BrianInvoker(opFolder, Is, Idurs);				
+		//	BrianInvoker invoker = new BrianInvoker(_opFolder, currents.length);//new BrianInvoker(opFolder, Is, Idurs);				
+			PyInvoker invoker = new PyInvoker(_opFolder, nScens, 1, model.getvR()[0], model.getvPeak()[0], currents);
 			invoker.setDisplayErrorStream(true);
 			
-			File tempFileT = new File(VOLTAGE_FILENAME_PFX+"_t");
-			File tempFileV = new File(VOLTAGE_FILENAME_PFX+"_v");
-			
-			GeneralFileWriter.write(tempFileT.getAbsolutePath(), times);
-			GeneralFileWriter.write(tempFileV.getAbsolutePath(), vs);
-			
-			String doShow = "0";
+			String doShow = "1";
 			if(forceTrial>-1)
 				doShow = "1";
-			invoker.invoke(VOLTAGE_FILENAME_PFX, doShow);//invoker.invoke(model);
+			invoker.invoke_forDisUtil(VOLTAGE_FILENAME_PFX, doShow);//invoker.invoke(model);
 			
-			tempFileT.delete();
-			tempFileV.delete();
+			for(int i=0;i<nScens;i++) {
+				File tempFileT = new File(VOLTAGE_FILENAME_PFX+"_t"+i);
+				File tempFileV = new File(VOLTAGE_FILENAME_PFX+"_v"+i);
+				tempFileT.delete();
+				tempFileV.delete();
+			}
+			
 			
 	}
 	/*
@@ -553,7 +597,7 @@ public class DisplayUtilMcwSyn {
 				"*mV\nvPeak"+idx+"="+model.getvPeak()[idx]+"*mV\nc"+idx+"="+model.getvMin()[idx]+"*mV";
 		System.out.println(forBrian);
 	}
-	private static void displayForC(Izhikevich9pModelMC model, int idx) {
+	public static void displayForC(Izhikevich9pModelMC model, int idx) {
 		String forC ="";		
 		forC = "\n\nk"+idx+"="+model.getK()[idx]+";\na"+idx+"="+model.getA()[idx]+";\nb"+idx+"="+model.getB()[idx]+
 				";\nd"+idx+"="+model.getD()[idx]+";\nC"+idx+"="+model.getcM()[idx]+";\nvR"+idx+"="+model.getvR()[idx]+";\nvT"+idx+"="+model.getvT()[idx]+
@@ -581,17 +625,17 @@ public class DisplayUtilMcwSyn {
 		double c0, c1, c2;
 		
 		double Gt_1, P_1, Gt_2, P_2;
-		double[] newCurrents = new double[]{408};//, currents[1]};
+		double[] newCurrents = new double[]{500, 650};//, currents[1]};
 
-		k0=1.029252f;
-				a0=0.0015812784f;
-				b0=2.3435593f;
-				d0=3.0f;
-				C0=85.0f;
-				vR0=-60.772045f;
-				vT0=-30.712957f;
-				vPeak0=19.3511f;
-				c0=-53.59736f;
+		k0=3.5916956523848826;
+				a0=0.009873755940151841;
+				b0=-10.914911940624444;
+				d0=120.0;
+				C0=195.0;
+				vR0=-63.500227564101365;
+				vT0=-46.58951988218102;
+				vPeak0=11.38098396907138;
+				c0=-50.61623937186045;
 
 						
         model.setK(getDouble1dArray(k0));
@@ -617,7 +661,8 @@ public class DisplayUtilMcwSyn {
 		evaluator.setDisplayAll(true);	
 		evaluator.getFitness();
 		System.out.println("\nSpike Times: ");
-		GeneralUtils.displayArray(evaluator.getModelSomaSpikePatternHolder().getSpikeTimes());
+		
+		GeneralUtils.displayArray(evaluator.getModelSpikePatternHolder().get(0)[0].getSpikeTimes());
       
 	}
 	private static float[] getMirroredDendComp(float[] genes){
@@ -636,7 +681,10 @@ public class DisplayUtilMcwSyn {
 			return new Izhikevich9pModelMC(2);
 		}
 		if(nComp==3){
-			return new Izhikevich9pModel3C(3);
+			if(MultiCompConstraintEvaluator.forwardConnectionIdcs[2]==0)
+				return new Izhikevich9pModel3C(3);
+			else
+				return new Izhikevich9pModel3C_L2(3);
 		}
 		if(nComp==4){
 			return new Izhikevich9pModel4C(4);

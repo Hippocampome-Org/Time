@@ -27,7 +27,8 @@ import ec.util.ParameterDatabase;
 
 public class ECJStarterV2 {	
 	public static final boolean MULTI_OBJ = false;
-	public static final boolean TURN_OFF_CLASSIFIER = false;
+	public static boolean TURN_OFF_CLASSIFIER = false;
+	public static boolean IF_FITTING= false;
 	
 	public static String Phen_Category = "1-1-1";
 	public static String Phen_Num = "B0";
@@ -38,12 +39,18 @@ public class ECJStarterV2 {
 	public static int[] CONN_IDCS =null; 	
 	public static String PRIMARY_INPUT = "";
 	private static final boolean timer = true;			
-		 
+	private static int null_var = -1;
 	private static String ECJ_PARMS;	
+	public static String raw_primary_input;
 	static {
 		try {
+			null_var=0;
+			if(null_var==0) {
+				
+			}
 			BufferedReader br = new BufferedReader(new FileReader("primary_input"));
 			String str = br.readLine();
+			raw_primary_input = str;
 			if(str==null){
 				System.out.println("Empty primary input!");
 				System.exit(-1);
@@ -61,6 +68,7 @@ public class ECJStarterV2 {
 				CONN_IDCS[i]=Integer.valueOf(st.nextToken());
 			if(st.hasMoreTokens()){
 				iso_comp = Boolean.valueOf(st.nextToken());
+				System.out.println("iso?: "+iso_comp);
 			}
 			str = br.readLine();
 			if(str.equals("ext")){
@@ -87,6 +95,8 @@ public class ECJStarterV2 {
 	public static void main(String[] args) {	
 		OneNeuronInitializer.init(N_COMP, CONN_IDCS, PRIMARY_INPUT, iso_comp);
 		Map<ModelParameterID, EAParmsOfModelParm> geneParms = OneNeuronInitializer.geneParms;
+		//EAGenes.displayMap();
+		//System.exit(0);
 		
         MCParamFile ecjParamFile;
 		try {	
@@ -99,11 +109,13 @@ public class ECJStarterV2 {
 				ecjParamFile.addParametertoDB("multi.fitness.num-objectives", ""+ModelEvaluatorWrapper.INPUT_SPIKE_PATTERN_CONS.length);
 			}
 			
+			
+			
 			//ecjParamFile.displayParameterDB();
 			//System.exit(0);
 			int nJobs =  ecjParamFile.getParameterFromDB("jobs");
-			
 			if(args.length==0){
+				ecjParamFile.addParametertoDB("stat.file","../output/Full");
 				File opDir = new File("output//"+Phen_Category+"//"+Phen_Num+"//"+Neur+"//"+"local");
 				if(!(new File("output//"+Phen_Category).exists())){
 					new File("output//"+Phen_Category).mkdir();
@@ -118,18 +130,27 @@ public class ECJStarterV2 {
 					opDir.mkdir();
 				}
 				
-				runLocally(nJobs,parameterDB,true);
+				runLocally(nJobs,parameterDB,false);
 			}else{	
 				//on server
 				String opFolder = Phen_Category+"_"+Phen_Num+"_"+Neur;
-				File opDir = new File("output//"+opFolder);
+				File opDir=null;
+				if(args.length==1) { //on ki-mind and 246/247
+					ecjParamFile.addParametertoDB("stat.file","..//output//Full");
+					opDir = new File("output//"+opFolder);
+				}
+				if(args.length==2) { //on ARGO
+					ecjParamFile.addParametertoDB("stat.file","..//..//..//..//scratch//siyappan//output//Full");
+					opDir = new File("//scratch//siyappan//output//"+opFolder);
+				}
 				if(!opDir.exists()){
 					opDir.mkdir();
 				}	
-				int jobIdx = Integer.valueOf(args[0]);
+				int jobIdx = Integer.valueOf(args[0]);//ignore args[1] -> just a flag
 				int chkpntidx = 0;
-				if(args.length>1)
-					chkpntidx=Integer.valueOf(args[1]);
+				if(args.length>2)
+					chkpntidx=Integer.valueOf(args[2]);
+				
 				runOnServer(parameterDB, opFolder, jobIdx, chkpntidx, false);
 			}
 			
@@ -292,7 +313,10 @@ class MCParamFile {
 			//if(!ModelParameterID.VR.equals(modelParam) && !ModelParameterID.P.equals(modelParam) && !ModelParameterID.W.equals(modelParam))
 			{
 				 baseIdx = modelParamIndices[0];
-			}			
+			}	
+			if(ModelParameterID.G.equals(modelParam) || ModelParameterID.P.equals(modelParam)) {
+				isDendrite=true;
+			}
 			for(int idx: modelParamIndices){				
 				addGene(modelParam, idx, isDendrite, baseIdx);
 				if(!ModelParameterID.I.equals(modelParam) && !ModelParameterID.I_dur.equals(modelParam)) 
@@ -319,12 +343,40 @@ class MCParamFile {
 		
 		if(isDendrite){
 			if(ModelParameterID.B.equals(modelParam)){
-				addParametertoDB("vector.species.min-gene."+idx, "-30.0");
+				addParametertoDB("vector.species.min-gene."+idx, "-50.0");
+				addParametertoDB("vector.species.max-gene."+idx, "50.0");
+			}
+			if(ModelParameterID.A.equals(modelParam)){
+				addParametertoDB("vector.species.min-gene."+idx, "0.0");
+				addParametertoDB("vector.species.max-gene."+idx, "0.01");
+			}
+			if(ModelParameterID.K.equals(modelParam)){
+				addParametertoDB("vector.species.min-gene."+idx, "0.1");
+				addParametertoDB("vector.species.max-gene."+idx, "1.0");
+			}
+			if(ModelParameterID.D.equals(modelParam)){
+				addParametertoDB("vector.species.min-gene."+idx, "0");
+				addParametertoDB("vector.species.max-gene."+idx, "1000.0");
+			}
+			if(ModelParameterID.VT.equals(modelParam)){
+				addParametertoDB("vector.species.max-gene."+idx, "50.0");
 			}
 			if(eaParams.getMutType().equals("integer-random-walk")){
-				addParametertoDB("vector.species.random-walk-probability."+idx, String.valueOf(Float.valueOf(eaParams.getMutRate())*1));
+				if(ModelParameterID.G.equals(modelParam)){
+					addParametertoDB("vector.species.random-walk-probability."+idx, String.valueOf(Float.valueOf(eaParams.getMutRate())*0.5));
+				}else
+					addParametertoDB("vector.species.random-walk-probability."+idx, String.valueOf(Float.valueOf(eaParams.getMutRate())*1));
 			}else{
-				addParametertoDB("vector.species.mutation-prob."+idx,String.valueOf(Float.valueOf(eaParams.getMutRate())*1));
+				if(ModelParameterID.P.equals(modelParam)){
+					addParametertoDB("vector.species.mutation-prob."+idx,String.valueOf(Float.valueOf(eaParams.getMutRate())*0.5));
+				}else {
+					if(ModelParameterID.K.equals(modelParam)) {
+						addParametertoDB("vector.species.mutation-prob."+idx,String.valueOf(Float.valueOf(eaParams.getMutRate())*0.5));
+					}else {
+						addParametertoDB("vector.species.mutation-prob."+idx,String.valueOf(Float.valueOf(eaParams.getMutRate())*0.5));
+					}
+				}
+					
 			}
 		}else{
 			if(eaParams.getMutType().equals("integer-random-walk")){
@@ -336,11 +388,13 @@ class MCParamFile {
 		
 		
 		if(isDendrite && 
-			//	!ModelParameterID.K.equals(modelParam) &&
+				!ModelParameterID.K.equals(modelParam) &&
+				!ModelParameterID.A.equals(modelParam) &&
+				!ModelParameterID.B.equals(modelParam) &&
 			//	!ModelParameterID.CM.equals(modelParam) &&
 				!ModelParameterID.VPEAK.equals(modelParam)&&
-				!ModelParameterID.P.equals(modelParam)&&
-			//	!ModelParameterID.G.equals(modelParam)&&
+			//	!ModelParameterID.P.equals(modelParam)&&
+				!ModelParameterID.G.equals(modelParam)&&
 				!ModelParameterID.W.equals(modelParam)) { // for dendrite bounded bw (0 and 10), hence set to true
 			addParametertoDB("vector.species.mutation-bounded."+idx, "false");
 		}else{

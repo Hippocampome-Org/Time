@@ -403,7 +403,7 @@ public class InputParser {
 			}
 			
 		}catch(JSONException e){
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 		}	
 		
 		return phenConsData;

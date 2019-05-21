@@ -1,5 +1,8 @@
 package ec.app.izhikevich.evaluator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ec.app.izhikevich.ModelEvaluatorWrapper;
 import ec.app.izhikevich.inputprocess.InputMCConstraint;
 import ec.app.izhikevich.inputprocess.InputSpikePatternConstraint;
@@ -14,7 +17,7 @@ import ec.app.izhikevich.util.DisplayUtilMcwSyn;
 import ec.app.izhikevich.util.GeneralUtils;
 
 public class ModelEvaluatorMC{
-		
+	public static boolean EVAL_MC_FOR_MC = true;
 	Izhikevich9pModelMC model;	
 	InputSpikePatternConstraint[] expSpikePatternData;	
 	InputMCConstraint[] mcConstraintData;	
@@ -33,11 +36,14 @@ public class ModelEvaluatorMC{
 	
 	private MultiCompConstraintEvaluator mcEvalholder;
 	private SpikePatternEvaluatorV2 spEvalHolder;
+	
+	public List<SpikePatternEvaluatorV2> spEvalHolders;
+	
 	private PhenotypeConstraintEvaluator ptEvalHolder;
-	private SpikePatternAdapting modelSomaSpikePatternHolder;
+	private List<SpikePatternAdapting[]> modelSpikePatternHolder;
 	private boolean rampRheo;
 	
-	
+	private boolean saveModelPattern;
 	/*
 	 * carlSpikePattern array only maps to the expSpikePatternData array
 	 * -- meaning there are no spike pattern data for dendritic compartments
@@ -65,7 +71,8 @@ public class ModelEvaluatorMC{
 			System.out.println("NULL expSpikePatternData!!!");
 			throw new IllegalStateException("NULL expSpikePatternData!!!");
 		}
-		if(mcConstraintData==null && model.getNCompartments()>1 && !ModelEvaluatorWrapper.ISO_COMPS) {
+		if(EVAL_MC_FOR_MC)
+		if(mcConstraintData==null && model.getNCompartments()>1 && !model.isIso_comp()) {
 			System.out.println("NULL mcConstraintData!!!");
 			throw new IllegalStateException("NULL mcConstraintData!!!");
 		}
@@ -82,8 +89,11 @@ public class ModelEvaluatorMC{
 		displayForPlotIdx = -1;
 		this.externalSimulatorUsed=false;
 		
-		modelSomaSpikePatternHolder = null;
+		modelSpikePatternHolder = null;
 		this.rampRheo = false; //by default false, later change it to true?
+		saveModelPattern = false;
+		
+		spEvalHolders = new ArrayList<>();
 	}
 	
 	
@@ -102,6 +112,7 @@ public class ModelEvaluatorMC{
 			System.out.println("NULL expSpikePatternData!!!");
 			throw new IllegalStateException("NULL expSpikePatternData!!!");
 		}
+		if(EVAL_MC_FOR_MC)
 		if(mcConstraintData==null && model.getNCompartments()>1) {
 			System.out.println("NULL mcConstraintData!!!");
 			throw new IllegalStateException("NULL mcConstraintData!!!");
@@ -121,7 +132,10 @@ public class ModelEvaluatorMC{
 		this.carlMcSimData = carlMcSimData;
 		this.externalSimulatorUsed=true;
 		
-		modelSomaSpikePatternHolder = null;
+		modelSpikePatternHolder = null;
+		saveModelPattern=false;
+		
+		spEvalHolders = new ArrayList<>();
 	}
 	
 public boolean measureFeatures(int minSpikes) {
@@ -218,7 +232,8 @@ public boolean measureFeatures(int minSpikes) {
 		/*
 		 * 2. mcCompartment constraints
 		 */
-		if(model.getNCompartments()>1 && !ModelEvaluatorWrapper.ISO_COMPS){
+		if(EVAL_MC_FOR_MC)
+		if(model.getNCompartments()>1 && !model.isIso_comp()){
 			MultiCompConstraintEvaluator mcEvaluator;
 			if(externalSimulatorUsed){
 				mcEvaluator = new MultiCompConstraintEvaluator(model, displayAll, synWeight, carlMcSimData);
@@ -226,6 +241,9 @@ public boolean measureFeatures(int minSpikes) {
 				mcEvaluator = new MultiCompConstraintEvaluator(model, displayAll, synWeight, rampRheo);
 			}			
 			setMcEvalholder(mcEvaluator);
+			if(saveModelPattern) {
+				mcEvaluator.setSaveSP_Is_hold(true);
+			}
 			//System.out.println(mcConstraintData.length);
 			for(int i = 0; i < mcConstraintData.length; i++) {			
 				if(displayStatus) {System.out.println("Start mc data point....");}			
@@ -352,7 +370,7 @@ public boolean measureFeatures(int minSpikes) {
         		System.out.print("Imin "+expSpikePatternData.getCurrent().getValueMin());
         		System.out.print("Imax "+expSpikePatternData.getCurrent().getValueMax());
         		System.out.print("Idur "+expSpikePatternData.getCurrentDuration());
-        		throw new IllegalStateException("Matching failed!");
+        	//	throw new IllegalStateException("Matching failed!");
         	}        	   
         }else{
         	model_spike_pattern = solver.solveAndGetSpikePatternAdapting();	 
@@ -402,8 +420,11 @@ public boolean measureFeatures(int minSpikes) {
 					&& compartmentError < Float.MAX_VALUE) {
 				compartmentError += 0.1*temporaryDendriticMirroredSpikesError(model_spike_pattern);
 			}*/
-		this.setModelSomaSpikePatternHolder(model_spike_pattern[0]);
-		this.setSpEvalHolder(evaluator);
+		if(saveModelPattern) {
+			this.addModelSpikePatternHolder(model_spike_pattern);
+			this.setSpEvalHolder(evaluator);
+		}
+			
 		if(displayAll) {
 			String comp = "SOMA";
 			if(expSpikePatternData.getCompartment()>0){
@@ -436,7 +457,7 @@ public boolean measureFeatures(int minSpikes) {
 		if(model.getNCompartments()<2) return true;
 		double[] g = model.getG();
 		for(int i=0;i<g.length;i++)
-			if(g[i]<5) return false;
+			if(g[i]<0.01) return false;
 		return true;
 	}
 	private boolean isCmValid(){
@@ -487,13 +508,20 @@ public boolean measureFeatures(int minSpikes) {
 		this.mcEvalholder = mcEvalholder;
 	}
 
-	public SpikePatternAdapting getModelSomaSpikePatternHolder() {
-		return modelSomaSpikePatternHolder;
+	public List<SpikePatternAdapting[]> getModelSpikePatternHolder() {
+		return modelSpikePatternHolder;
 	}
-
+/*
 	public void setModelSomaSpikePatternHolder(
 			SpikePatternAdapting modelSomaSpikePatternHolder) {
 		this.modelSomaSpikePatternHolder = modelSomaSpikePatternHolder;
+	}*/
+	public void addModelSpikePatternHolder(
+			SpikePatternAdapting[] modelSpikePatternHolder) {
+		if(this.modelSpikePatternHolder==null) {
+			this.modelSpikePatternHolder=new ArrayList<SpikePatternAdapting[]>();
+		}
+		this.modelSpikePatternHolder.add(modelSpikePatternHolder);
 	}
 
 	public boolean isRampRheo() {
@@ -522,6 +550,7 @@ public boolean measureFeatures(int minSpikes) {
 
 	public void setSpEvalHolder(SpikePatternEvaluatorV2 spEvalHolder) {
 		this.spEvalHolder = spEvalHolder;
+		this.spEvalHolders.add(spEvalHolder);
 	}
 
 
@@ -532,6 +561,16 @@ public boolean measureFeatures(int minSpikes) {
 
 	public void setPtEvalHolder(PhenotypeConstraintEvaluator ptEvalHolder) {
 		this.ptEvalHolder = ptEvalHolder;
+	}
+
+
+	public boolean isSaveModelPattern() {
+		return saveModelPattern;
+	}
+
+
+	public void setSaveModelPattern(boolean saveModelPattern) {
+		this.saveModelPattern = saveModelPattern;
 	}
 	
 	

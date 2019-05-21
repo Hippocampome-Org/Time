@@ -31,7 +31,7 @@ public class IzhikevichSolverMC {
 	public IzhikevichSolverMC(Izhikevich9pModelMC model) {
 		this.model = model;
 		//override TN
-		float tn = (float) (model.getDurationOfCurrent() + 250);				
+		float tn = (float) (model.getDurationOfCurrent() + 2*model.getTimeMin());				
 		this.setParameters(SS, T_0, tn);		
 	}
 	

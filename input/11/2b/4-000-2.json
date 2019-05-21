@@ -1,0 +1,153 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 2,
+				"V" : 0
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 30.0751
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 4
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 574.15439,
+			"pattern_class" : "NASP",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"fsl" : {
+				"W" : 3,
+				"V" : 177.27847
+			},
+			"current" : {
+				"V" : [
+					190,
+					210
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.499370937
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+	"parameter_ranges" : {
+		"VT" : [
+			13, 15
+		],
+		"D" : [
+			400,
+			600
+		],
+		"W" : [
+			0,
+			1
+		],
+		"VMIN" : [
+			9, 10
+		],
+		"VR" : [
+			-63,
+			-62
+		],
+		"G" : [
+			150,
+			200
+		],
+		"P" : [
+			0.1,
+			0.5
+		],
+		"A" : [
+			0,
+			0.1
+		],
+		"B" : [
+			-25,
+			10
+		],
+		"VPEAK" : [
+			94,
+			95
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"K" : [
+			5,
+			6
+		]
+	}
+}

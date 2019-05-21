@@ -29,10 +29,18 @@
 					(compCount-1); 		// EPSP
 		}
 		totalGroupCount = scenCount *compCount; // cuz of n compartments
+
+
 		popSize_neuronCount = _popSize_neuronCount;
-			//if(popSize_neuronCount < 3){
-					writeAllVs = false;
-			//}
+		//std::cout<<popSize_neuronCount<<"\n";
+		if(popSize_neuronCount < 50){
+			writeAllVs = true;
+		}else{
+			writeAllVs = false;
+		}
+
+		customI = 0;
+
 		Idur_start_idx = I_start_idx+scenCount ;
 
 		connLayout = _connLayout;
@@ -46,9 +54,12 @@
 
 		for(int i=0;i<scenCount;i++){
 			//I[i] = new float[popSize_neuronCount];
-			I[i].reserve(popSize_neuronCount);
+
+			//I[i].reserve(popSize_neuronCount);
+
 			Idur[i] = new int[popSize_neuronCount];
 		}
+
 		for(int i=0;i<scenCount+mcScenCount;i++){
 			excGroup[i] = new int[compCount];
 			excMonitor[i] = new SpikeMonitor*[compCount];
@@ -63,12 +74,17 @@
 			rheos = new int* [popSize_neuronCount];
 			vDefs = new float* [popSize_neuronCount];
 			somEpsps = new float* [popSize_neuronCount];
+			epspsAll = new float** [popSize_neuronCount];
 			spikePropRates = new float* [popSize_neuronCount];
 			for(int i=0;i<popSize_neuronCount;i++){
 				rheos[i] = new int[compCount];
 				vDefs[i] = new float[compCount];
 				spikePropRates[i] = new float[compCount-1];
 				somEpsps[i] = new float[compCount-1];
+				epspsAll[i] = new float* [compCount-1];
+				for(int j=0;j<compCount-1;j++){
+					epspsAll[i][j]= new float[compCount];
+				}
 			}
 		}
 }
@@ -101,10 +117,15 @@
 					delete vDefs[i];
 					delete spikePropRates[i];
 					delete somEpsps[i];
+					for(int j=0;j<compCount-1;j++){
+						delete epspsAll[i][j];
+					}
+					epspsAll[i];
 				}
 				delete rheos ;
 				delete vDefs ;
 				delete somEpsps ;
+				delete epspsAll;
 				delete spikePropRates ;
 			}
 			delete network;
@@ -118,6 +139,9 @@
 			network = new CARLsim("MCNeuronSim_core", GPU_MODE, SILENT, deviceID);
 	}
 
+	void MCNeuronSim::isCustomI(const int is_custom_I){
+		customI = is_custom_I;
+	}
 	void MCNeuronSim::setupGroups(){
 		//int poissonGroup[scenCount];
 			/*
@@ -194,39 +218,85 @@
 									0.0336908f, 6.5490165f, 35.965454f,-41.31163f, 7.0f);
 			}
 
-
+			float connProb=0.3f;
+			if(writeAllVs){
+				connProb=1.0f;
+			}
 			const int epspGrpRowStartIdx = scenCount + 2+ (compCount-1);
 			float _weight = 1.0f;
 			for(int kc=0; kc<(compCount-1); kc++){
-				if(kc+1>1)
-					_weight = 10.0f;
+				/*
+				 * new addition for CA1 pyramidal dendrites analysis
+				 */
+				if(compCount==4 && kc==0)
+					_weight = 1.0f;
+				if(compCount==4 && kc==1)
+					_weight = 1.0f/3.0f;//1.0f/6.0f;
+				if(compCount==4 && kc==2)
+					_weight = 2.5f*(1.0f/3.0f); //3.0f*(1.0f/3.0f);
+
+
+				/*if(compCount==4 && kc==2)
+					_weight = 1.0f;
+					*/
+				/*
+				 * new addition ends
+				 */
+
+
 				for(int pssg=0;  pssg<nPreSynSpikerGroups;pssg++){
 					network->connect(excGroup[scenCount+mcScenCount][pssg], excGroup[epspGrpRowStartIdx + kc][kc+1],
-											"random", RangeWeight(_weight), 0.1f,
+											"random", RangeWeight(_weight), connProb,
 											RangeDelay(1),  RadiusRF(-1), SYN_FIXED, 1.0f, 0.0f);
 				}
 			}
 
 			//multi neuron single compartment spikers for new spike prop implementation via synaptic stimulation
 			for(int pssg=nPreSynSpikerGroups;  pssg<nPreSynSpikerGroups*2;pssg++){
-				excGroup[scenCount+mcScenCount][pssg] = network->createGroup("spiker_"+ patch::to_string(pssg), 200, EXCITATORY_NEURON);
+				//excGroup[scenCount+mcScenCount][pssg] = network->createGroup("spiker_"+ patch::to_string(pssg), 16, EXCITATORY_NEURON);
+				excGroup[scenCount+mcScenCount][pssg] = network->createGroup("spiker_"+ patch::to_string(pssg), 85, EXCITATORY_NEURON);
+
 				network->setNeuronParameters(excGroup[scenCount+mcScenCount][pssg], 121.0f, 0.5343182f,-61.20764f,-40.00114f,
 									0.0336908f, 6.5490165f, 35.965454f,-41.31163f, 7.0f);
 			}
 
 			const int propRateGrpRowStartIdx = scenCount + 2;
 
-			_weight =1.0f;
+			//_weight =33.0f;
+			_weight =2.0f;
 			for(int kc=0; kc<(compCount-1); kc++){
-				if(kc+1>1)
-					_weight = 10.0f;
+				//if(kc+1>1)
+				//	_weight = 10.0f;
+					if(compCount==4 && kc==0)
+						_weight = 1.0f;
+					if(compCount==4 && kc==1)
+						_weight = 1.0f;	//_weight = 0;			//0, cuz this is not a check for prop in SR. By setting this weight 0, SR only has the I(=700?, {see determine prop rate function})- this is a baseline to test conditional spike propagation
+					if(compCount==4 && kc==2)
+						_weight = 2.0f;
+
 				for(int pssg=nPreSynSpikerGroups;  pssg<nPreSynSpikerGroups*2;pssg++){
 					network->connect(excGroup[scenCount+mcScenCount][pssg], excGroup[propRateGrpRowStartIdx + kc][kc+1],
-																"random", RangeWeight(_weight), 0.1f,
-																RangeDelay(1),  RadiusRF(-1), SYN_FIXED, 1.0f, 0.0f );
+																"random", RangeWeight(_weight), connProb,
+																RangeDelay(1,10),  RadiusRF(-1), SYN_FIXED, 1.0f, 0.0f );
 				}
 			}
 
+			if(customI==1){
+				std::cout<<"pre - in";
+				custom_grp_in=network->createSpikeGeneratorGroup("custom_input_0", 1, EXCITATORY_NEURON);
+				std::vector<int> spkTimes = {150, 250, 400, 600};
+				SpikeGeneratorFromVector SGV(spkTimes);
+				network->setSpikeGenerator(custom_grp_in, &SGV);
+
+				int compartment_to_stimulate = 1;
+				//create poisson group!
+				network->connect(custom_grp_in, excGroup[0][compartment_to_stimulate], "full", RangeWeight(10), 1, RangeDelay(1),RadiusRF(-1),SYN_FIXED);
+
+				std::cout<<"custom_input EXIT ";							//
+			}
+
+
+			//
 			/*
 			 *  (C) Now, setup network!
 			 */
@@ -234,6 +304,56 @@
 			network->setIntegrationMethod(RUNGE_KUTTA4, time_step);
 			network->setupNetwork();
 		}
+
+	void MCNeuronSim::setupGroups_custom(){
+
+			float G_up, G_dn;
+			int k=0;
+				//std::string poissonGroupName = "poisson_" + patch::to_string(k);
+				//poissonGroup[k] = network->createSpikeGeneratorGroup(poissonGroupName, popSize_neuronCount, EXCITATORY_NEURON);
+				for(int c=0; c<compCount; c++)
+				{
+					std::string excGroupName = "exc_" + patch::to_string(k) + patch::to_string(c);
+					excGroup[k][c] = network->createGroup(excGroupName, popSize_neuronCount, EXCITATORY_NEURON);
+					network->setNeuronParameters(excGroup[k][c], 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f);
+			//		network->setExternalCurrent(excGroup[k][c], 0);
+					if(compCount>1){
+						G_up = 0;
+						G_dn = 0;
+						network->setCompartmentParameters(excGroup[k][c], G_up, G_dn);
+					}
+					excMonitor[k][c] = network->setSpikeMonitor(excGroup[k][c], "/dev/null");
+
+					if(c>0){//connect compartments based on layout
+						if(compCount>2 && c==1 && connLayout[c]==connLayout[c+1]){ //meaning 2 dendrites (dend 1 and dend2 ) connecting to the same point
+							network->connectCompartments(excGroup[k][c], excGroup[k][connLayout[c]]);
+						}else{
+							network->connectCompartments(excGroup[k][connLayout[c]], excGroup[k][c]);
+						}
+					}
+				}
+
+				/*
+				 *
+				 */
+				//std::cout<<"pre ";
+
+				//int custom_grp_in2=network->createSpikeGeneratorGroup("input", 10, EXCITATORY_NEURON);
+				//std::vector<int> spkTimes = {150, 250, 400, 600};
+				//SpikeGeneratorFromVector SGV(spkTimes);
+		//		network->setSpikeGenerator(custom_grp_in2, &SGV);
+
+					//std::cout<<"custom_input TRUE ";
+					//int compartment_to_stimulate = 1;
+					//create poisson group!
+					//network->connect(custom_grp_in, excGroup[0][compartment_to_stimulate], "full", RangeWeight(10), 1, RangeDelay(1),RadiusRF(-1),SYN_FIXED);
+
+				//std::cout<<"custom_input EXIT ";
+
+			network->setConductances(true);
+			network->setIntegrationMethod(RUNGE_KUTTA4, time_step);
+			network->setupNetwork();
+	}
 
 	void MCNeuronSim::setupAllNeuronParms(){
 			/*
@@ -270,6 +390,7 @@
 						}
 				}
 		}
+
 
 	void MCNeuronSim::setupSingleNeuronParms(int grpRowId, int neurId, bool coupledComp){
 			for(unsigned int c = 0; c < compCount; c++) // each neuron has compCount compartments
@@ -308,52 +429,116 @@
 		}
 
 	void MCNeuronSim::setupIandRunNetwork(){
-		if(writeAllVs){
-			for(int k = 0; k < scenCount; k++){
-				for(int c=0;c<compCount; c++){
-					std::string fileName = "results/allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
-					network->recordVoltage(excGroup[k][c], 0, fileName); // for now just record from first neuron
-					network->setExternalCurrent(excGroup[k][c], 0);
+
+				for(int k = 0; k < scenCount; k++){
+					for(int c=0;c<compCount; c++){
+						if(writeAllVs){
+							for(int i=0;i<popSize_neuronCount;i++){
+								std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
+								network->recordVoltage(excGroup[k][c], i, fileName); // for now just record from first neuron
+							}
+						}
+						network->setExternalCurrent(excGroup[k][c], 0);
+					}
 				}
-			}
-			network->runNetwork(0, 100);
-		}
+		network->runNetwork(0, 100);
 
 			for(int k = 0; k < scenCount; k++){
 				network->setExternalCurrent(excGroup[k][0], I[k]);			// external current scenarios are only for somatic compartment
 				excMonitor[k][0]->startRecording();
 				if(writeAllVs){
-					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[k][c], 0, fileName); // for now just record from first neuron
-					}
+						for(int c=0;c<compCount; c++){
+							for(int i=0;i<popSize_neuronCount;i++){
+								std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
+								network->recordVoltage(excGroup[k][c], i, fileName); // for now just record from first neuron
+							}
+						}
 				}
 			}
 
-			network->runNetwork(0, Idur[0][0]); //remember, Idur has repetitive values (same for all neurons within a group)
+			int sec=0;
+			int msec=Idur[0][0];
+			if(msec>999){
+				sec=msec/1000;
+				msec=msec-(sec*1000);
+			}
+		//	std::cout<<"sec: "<<sec<<",   msec:"<<msec;
+			network->runNetwork(sec, msec); //remember, Idur has repetitive values (same for all neurons within a group)
 			network->setExternalCurrent(excGroup[0][0], 0);
 			//network->runNetwork(0, 100);
 
 			for(int k = 1; k < scenCount; k++)
 			 {
-				network->runNetwork(0, Idur[k][0]-Idur[k-1][0]); // assuming durations are in asc order
+				sec=0;
+				msec=Idur[k][0]-Idur[k-1][0];  // assuming durations are in asc order
+				if(msec>999){
+					sec=msec/1000;
+					msec=msec-(sec*1000);
+				}
+			//	std::cout<<"sec: "<<sec<<",   msec:"<<msec;
+				network->runNetwork(sec, msec);
 				network->setExternalCurrent(excGroup[k][0], 0);
 			 }
 
 			// if(1000>Idur[scenCount-1][0]){
 			//	 network->runNetwork(0, 1000 - Idur[scenCount-1][0]); // complete 1s runtime, if required
 			 //}
-			if(writeAllVs){
+
 				for(int k = 0; k < scenCount; k++){
 					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[k][c], 0, fileName); // for now just record from first neuron
+						if(writeAllVs){
+							for(int i=0;i<popSize_neuronCount;i++){
+								std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
+								network->recordVoltage(excGroup[k][c], i, fileName); // for now just record from first neuron
+							}
+						}
 						network->setExternalCurrent(excGroup[k][c], 0);
 					}
 				}
 				network->runNetwork(0, 100);
+
+
+		}
+
+
+
+	void MCNeuronSim::setupCustomI_AndRunNetwork(){
+
+		//empty sim for 100ms
+		int k=0; // 1 scenario
+
+		excMonitor[k][0]->startRecording();
+
+		for(int c=0;c<compCount; c++){
+			if(writeAllVs){
+				for(int i=0;i<popSize_neuronCount;i++){
+					std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
+					network->recordVoltage(excGroup[k][c], i, fileName); // for now just record from first neuron
+				}
+			}
+			network->setExternalCurrent(excGroup[k][c], 0);
+		}
+
+		network->runNetwork(0, 100);
+
+		//10hz 20hz inputs
+		//PoissonRate in(1);
+		//in.setRates(10);
+		//network->setSpikeRate(custom_grp_in,&in);
+
+
+		//
+		if(writeAllVs){
+			for(int c=0;c<compCount; c++){
+				for(int i=0;i<popSize_neuronCount;i++){
+					std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(k) + "_" + patch::to_string(c);
+					network->recordVoltage(excGroup[k][c], i, fileName);
+				}
 			}
 		}
+
+		network->runNetwork(1, 900);
+}
 
 	void MCNeuronSim::writePhenotype(std::ostream &outputStream){
 		std::vector< std::vector<int> > spikeTimes[scenCount];
@@ -389,7 +574,7 @@
 				 * [2] write mcc scenarios!
 				 */
 				if(compCount>1){
-					MultiCompDataJson* mcd = new MultiCompDataJson(rheos[i], vDefs[i], spikePropRates[i], somEpsps[i], compCount);
+					MultiCompDataJson* mcd = new MultiCompDataJson(rheos[i], vDefs[i], spikePropRates[i], somEpsps[i], compCount, epspsAll[i]);
 					Json::Value mcData = mcd->retrieveJson();
 					wrapper["multi_comp_sim"] = mcData;
 				}
@@ -439,7 +624,7 @@
 					 * [2] write mcc scenarios!
 					 */
 					if(compCount>1){
-						MultiCompDataJson* mcd = new MultiCompDataJson(rheos[i], vDefs[i], spikePropRates[i], somEpsps[i], compCount);
+						MultiCompDataJson* mcd = new MultiCompDataJson(rheos[i], vDefs[i], spikePropRates[i], somEpsps[i], compCount, epspsAll[i]);
 						Json::Value mcData = mcd->retrieveJson();
 						wrapper["multi_comp_sim"] = mcData;
 					}
@@ -471,15 +656,16 @@
 			 */
 
 				const int grpRowIdx = scenCount+ 0;
-
-				if(writeAllVs){
-						for(int c=0;c<compCount; c++){
-							std::string fileName = "results/allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
-							network->recordVoltage(excGroup[grpRowIdx][c], 0, fileName); // for now just record from first neuron
-							network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
+				for(int c=0;c<compCount; c++){
+					if(writeAllVs){
+						for(int i=0;i<popSize_neuronCount;i++){
+							std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
+							network->recordVoltage(excGroup[grpRowIdx][c], i, fileName); // for now just record from first neuron
 						}
-						network->runNetwork(0, 100);
+					}
+					network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
 				}
+				network->runNetwork(0, 100);
 
 				bool rheoFound[popSize_neuronCount][compCount];
 				// init with default
@@ -496,8 +682,10 @@
 						network->setExternalCurrent(excGroup[grpRowIdx][c], I);
 						excMonitor[grpRowIdx][c]->startRecording();
 						if(writeAllVs){
-							std::string fileName = "results/allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
-							network->recordVoltage(excGroup[grpRowIdx][c], 0, fileName); // for now just record from first neuron
+							for(int i=0;i<popSize_neuronCount;i++){
+								std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
+								network->recordVoltage(excGroup[grpRowIdx][c], i, fileName); // for now just record from first neuron
+							}
 						}
 					}
 
@@ -547,18 +735,21 @@
 						}
 					}
 					if(allSomaticRheoFound){
-						break;
+						//break;
 					}
 				}
 
-				if(writeAllVs){
-						for(int c=0;c<compCount; c++){
-							std::string fileName = "results/allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
-							network->recordVoltage(excGroup[grpRowIdx][c], 0, fileName); // for now just record from first neuron
-							network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
+				for(int c=0;c<compCount; c++){
+					if(writeAllVs){
+						for(int i=0;i<popSize_neuronCount;i++){
+							std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
+							network->recordVoltage(excGroup[grpRowIdx][c], i, fileName); // for now just record from first neuron
 						}
-						network->runNetwork(0, 100);
+					}
+					network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
 				}
+
+				network->runNetwork(0, 100);
 				//for (int i = 0; i < popSize_neuronCount; i++) {
 				//	delete[] * rheoFound;
 				//}
@@ -568,24 +759,28 @@
 		//	int runDur = Idur[scenCount-1][0];
 			const int grpRowIdx = scenCount+ 1;
 
-			if(writeAllVs){
-				for(int c=0;c<compCount; c++){
-					std::string fileName = "results/allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
-					network->recordVoltage(excGroup[grpRowIdx][c], 0, fileName); // for now just record from first neuron
-					network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
+
+			for(int c=0;c<compCount; c++){
+				if(writeAllVs){
+					for(int i=0;i<popSize_neuronCount;i++){
+						std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
+						network->recordVoltage(excGroup[grpRowIdx][c], i, fileName); // for now just record from first neuron
+					}
 				}
-				network->runNetwork(0, 100);
+				network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
 			}
 
-
+			network->runNetwork(0, 100);
 
 			/*
 			 * following is what's necessary for fitness! the above for voltage plots
 			 */
 			if(writeAllVs){
 				for(int c=0;c<compCount; c++){
-					std::string fileName = "results/allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
-					network->recordVoltage(excGroup[grpRowIdx][c], 0, fileName); // for now just record from first neuron
+					for(int i=0;i<popSize_neuronCount;i++){
+													std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
+													network->recordVoltage(excGroup[grpRowIdx][c], i, fileName); // for now just record from first neuron
+												}
 				}
 			}
 
@@ -601,27 +796,31 @@
 
 			network->runNetwork(0, I_dur);
 
-			if(writeAllVs){
-				for(int c=0;c<compCount; c++){
-					std::string fileName = "results/allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
-					network->recordVoltage(excGroup[grpRowIdx][c], 0, fileName); // for now just record from first neuron
-					network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
+
+			for(int c=0;c<compCount; c++){
+				if(writeAllVs){
+					for(int i=0;i<popSize_neuronCount;i++){
+						std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowIdx) + "_" + patch::to_string(c);
+						network->recordVoltage(excGroup[grpRowIdx][c], i, fileName); // for now just record from first neuron
+					}
 				}
-				network->runNetwork(0, 100);
+				network->setExternalCurrent(excGroup[grpRowIdx][c], 0);
 			}
+
+			network->runNetwork(0, 100);
 
 			//now, read Vs from the written file!
 			for(int c=0;c<compCount;c++){
 				for(int i=0;i<popSize_neuronCount;i++){
 					std::string fileName = "V_"+ patch::to_string(i) + "_" + patch::to_string(c);
-					float* vTrace = readVtrace(fileName, I_dur);
+					float* vTrace = readVtrace(fileName, I_dur, true);
 					vDefs[i][c]=vTrace[V_at_T-1];
 					delete vTrace;
 				}
 			}
 		}
 
-	float* MCNeuronSim::readVtrace(std::string fileName, int nLines){
+	float* MCNeuronSim::readVtrace(std::string fileName, int nLines, bool deleteFile){
 			float* vTrace = new float[nLines];
 
 			std::ifstream infile(fileName.c_str());
@@ -645,7 +844,8 @@
 				iss2 >> vTrace[i++];
 				//std::cout<<vTrace[i-1]<<"\n";
 			}
-			std::remove(fileName.c_str());
+			if(deleteFile)
+				std::remove(fileName.c_str());
 			return vTrace;
 		}
 
@@ -725,10 +925,6 @@
 				network->setExternalCurrent(excGroup[scenCount+mcScenCount][pssg], I_for_epsp);
 			}
 
-			/*
-			 * temp I for SLM to elicit spike!
-			 */
-			//network->setExternalCurrent(excGroup[grpRowStartIdx+compCount-2][compCount-2], 1200.0f);
 			// init with default
 			for(int i=0;i<popSize_neuronCount;i++){
 				for(int j=0;j<compCount-1;j++){
@@ -736,15 +932,32 @@
 					//thresholdCurrentFound[i][j]=false;
 				}
 			}
-
+			//I_dur = 100;
 			for(int kc=1;kc<compCount;kc++){//ofset for grprowstartidx; also compartment index
+
+				/*
+				 * temp I for SLM to elicit spike!
+				 */
+
+				//network->setExternalCurrent(excGroup[grpRowStartIdx+(kc-1)][kc], 0.0f);
+				if(kc==2){ // SR
+					network->setExternalCurrent(excGroup[grpRowStartIdx+1][2], 0.0f); // [2] --> I is setup in SR
+								// ALSO RESET near line 860
+				}
+				if(kc==3){ // SLM
+					network->setExternalCurrent(excGroup[grpRowStartIdx+2][2], 0.0f); // [2] cuz I is setup in SR
+								// ALSO RESET near line 860
+				}
+
 				excMonitor[grpRowStartIdx+(kc-1)][kc]->startRecording(); //group where synaptic input received (should have spiked)
 				excMonitor[grpRowStartIdx+(kc-1)][connLayout[kc]]->startRecording(); //group where prop rate checked
 
 				if(writeAllVs){
 					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(grpRowStartIdx+(kc-1)) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[grpRowStartIdx+(kc-1)][c], 0, fileName); // for now just record from first neuron
+						for(int i=0;i<popSize_neuronCount;i++){
+							std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowStartIdx+(kc-1)) + "_" + patch::to_string(c);
+							network->recordVoltage(excGroup[grpRowStartIdx+(kc-1)][c], i, fileName); // for now just record from first neuron
+						}
 					}
 				}
 			}
@@ -754,12 +967,17 @@
 			for(int pssg=nPreSynSpikerGroups;  pssg<nPreSynSpikerGroups*2;pssg++){
 				network->setExternalCurrent(excGroup[scenCount+mcScenCount][pssg], 0);
 			}
+			network->setExternalCurrent(excGroup[grpRowStartIdx+1][2], 0.0f);
+			network->setExternalCurrent(excGroup[grpRowStartIdx+2][2], 0.0f);
+
 			//loop repeat for vrecording
 			for(int kc=1;kc<compCount;kc++){
 				if(writeAllVs){
 					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(grpRowStartIdx+(kc-1)) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[grpRowStartIdx+(kc-1)][c], 0, fileName); // for now just record from first neuron
+						for(int i=0;i<popSize_neuronCount;i++){
+							std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowStartIdx+(kc-1)) + "_" + patch::to_string(c);
+							network->recordVoltage(excGroup[grpRowStartIdx+(kc-1)][c], i, fileName); // for now just record from first neuron
+						}
 					}
 				}
 			}
@@ -783,12 +1001,14 @@
 			if(writeAllVs){
 				for(int kc=1;kc<compCount;kc++){
 					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(grpRowStartIdx+(kc-1)) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[grpRowStartIdx+(kc-1)][c], 0, fileName); // for now just record from first neuron
+						for(int i=0;i<popSize_neuronCount;i++){
+													std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(grpRowStartIdx+(kc-1)) + "_" + patch::to_string(c);
+													network->recordVoltage(excGroup[grpRowStartIdx+(kc-1)][c], i, fileName); // for now just record from first neuron
+												}
 					}
 				}
-				network->runNetwork(0, 100);
 			}
+			network->runNetwork(0, 100);
 			//set threshold and other
 						for(int i=0;i<popSize_neuronCount;i++){
 							for(int kc=0;kc<compCount-1;kc++){
@@ -797,7 +1017,7 @@
 										float spikesAtSiteOfInit = spikeTimes_siteOfI[kc][i].size();
 										spikePropRates[i][kc]=spikesAtSiteOfCheck/spikesAtSiteOfInit;
 									}
-										/*std::cout<<"comp. site. of syn stim. \n";
+								/*		std::cout<<"comp. site. of syn stim. \n";
 										std::cout<<"n spikes. "<<spikeTimes_siteOfI[kc][i].size()<<"\n";
 										for(int ii=0;ii<spikeTimes_siteOfI[kc][i].size();ii++){
 											std::cout<<(spikeTimes_siteOfI[kc][i][ii])<<", ";
@@ -819,7 +1039,6 @@
 						}
 						//delete[] spikeTimes_siteOfI;
 						//delete[] spikeTimes_siteOfCheck;
-
 			}
 
 	void MCNeuronSim::measureSomaticEPSP(int I_dur){
@@ -838,8 +1057,10 @@
 				}
 				if(writeAllVs){
 					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(epspGrpRowStartIdx + kc) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[epspGrpRowStartIdx + kc][c], 0, fileName); // for now just record from first neuron
+						for(int i=0;i<popSize_neuronCount;i++){
+													std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(epspGrpRowStartIdx + kc) + "_" + patch::to_string(c);
+													network->recordVoltage(excGroup[epspGrpRowStartIdx + kc][c], i, fileName); // for now just record from first neuron
+												}
 					}
 				}
 			}
@@ -859,8 +1080,10 @@
 				if(writeAllVs){
 					I_dur +=50;
 					for(int c=0;c<compCount; c++){
-						std::string fileName = "results/allV_"+ patch::to_string(epspGrpRowStartIdx + kc) + "_" + patch::to_string(c);
-						network->recordVoltage(excGroup[epspGrpRowStartIdx + kc][c], 0, fileName); // for now just record from first neuron
+						for(int i=0;i<popSize_neuronCount;i++){
+							std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(epspGrpRowStartIdx + kc) + "_" + patch::to_string(c);
+							network->recordVoltage(excGroup[epspGrpRowStartIdx + kc][c], i, fileName); // for now just record from first neuron
+						}
 					}
 				}
 			}
@@ -870,7 +1093,7 @@
 			for(int kc=0; kc<(compCount-1); kc++){
 				for(int i=0;i<popSize_neuronCount;i++){
 					std::string fileName = "V_"+ patch::to_string(i) + "_" + patch::to_string(kc+1)+"_";
-					float* vTrace = readVtrace(fileName, I_dur);
+					float* vTrace = readVtrace(fileName, I_dur, true);
 
 					float maxVoltage = -1000;
 					for(int ii=0;ii<I_dur;ii++){
@@ -880,6 +1103,26 @@
 					}
 					somEpsps[i][kc]=maxVoltage;
 					delete vTrace;
+				}
+				/*
+				 * new addition: for mc analysis
+				 */
+				if(writeAllVs){
+					for(int c=0;c<compCount; c++){
+						for(int i=0;i<popSize_neuronCount;i++){
+							std::string fileName = "results/"+patch::to_string(i)+"allV_"+ patch::to_string(epspGrpRowStartIdx + kc) + "_" + patch::to_string(c);
+							float* vTrace = readVtrace(fileName, I_dur, false);
+
+							float maxVoltage = -1000;
+							for(int ii=0;ii<I_dur;ii++){
+								if(vTrace[ii]>maxVoltage){
+									maxVoltage = vTrace[ii];
+								}
+							}
+							epspsAll[i][kc][c]=maxVoltage;
+							delete vTrace;
+						}
+					}
 				}
 			}
 	}

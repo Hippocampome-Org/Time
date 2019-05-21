@@ -1,0 +1,166 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [{
+			"time_min" : 100,
+			"sfa_linear_m2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"sfa_linear_m1" : {
+				"W" : 2,
+				"V" : 0
+			},
+			"sfa_linear_m0" : {
+				"W" : 2,
+				"V" : 0.349862344008503
+			},
+			"pss" : {
+				"W" : 0,
+				"V" : 59
+			},
+			"n_sfa_isis0" : {
+				"W" : 0,
+				"V" : 3
+			},
+			"n_sfa_isis1" : {
+				"W" : 0,
+				"V" : 10
+			},
+			"n_sfa_isis2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_sfa_isis0",
+				"n_sfa_isis1",
+				"pss",
+				"fsl"
+			],
+			"current_duration" : 991.48,
+			"pattern_class" : "RASP.NASP",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				"L2-3 pyramidal Tripolar, fig7c6"
+			],
+			"fsl" : {
+				"W" : 0,
+				"V" : 30
+			},
+			"current" : {
+				"V" : [
+					190,
+					210
+				]
+			},
+			"pattern_weight" : 1,
+			"sfa_linear_b2" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"valid_max_v" : {
+				"V" : 200
+			},
+			"sfa_linear_b1" : {
+				"W" : 0,
+				"V" : 1.17793239910591
+			},
+			"sfa_linear_b0" : {
+				"W" : 0,
+				"V" : 1.410279703
+			},
+			"compartment" : 0
+		}
+	],
+	"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -500,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "PROPAGATION",
+			"INCLUDE" : true,
+			"dend_current_min" : 500,
+			"dend_current_max" : 2000,
+			"dend_current_time_min" : 50,
+			"dend_current_duration" : 100,
+			"dend_current_step" : 100,
+			"dend_target_spike_freq" : 10,
+			"spike_prop_rate_min" : 1,
+			"cons_weight" : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	],
+	"parameter_ranges" : {
+		"VT" : [
+			19, 21
+		],
+		"D" : [
+			-10,
+			1000
+		],
+		"W" : [
+			0,
+			10
+		],
+		"VMIN" : [
+			9, 10
+		],
+		"VR" : [
+			-61,
+			-60
+		],
+		"G" : [
+			1,
+			50
+		],
+		"P" : [
+			0.05,
+			0.5
+		],
+		"A" : [
+			0,
+			0.01
+		],
+		"B" : [
+			-25,
+			25
+		],
+		"VPEAK" : [
+			70,
+			71
+		],
+		"CM" : [
+			10,
+			800
+		],
+		"K" : [
+			0.1,
+			2
+		]
+	}
+}

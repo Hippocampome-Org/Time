@@ -1,0 +1,220 @@
+{
+	"pattern_repair_weights" : [
+		1,
+		0,
+		0
+	],
+	"spike_pattern_constraints" : [
+	{
+			"time_min" : 100,
+			"current" : {
+				"V" : [0, 1]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 0
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [48, 52]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 2
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [98, 102]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 6
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [148, 152]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 8
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [198, 202]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 10
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [248, 252]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 11
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+		{
+			"time_min" : 100,
+			"current" : {
+				"V" : [298, 302]
+			},
+			"n_spikes" : {
+				"W" : 0,
+				"V" : 11
+			},
+			"eval" : [
+				"n_spikes"
+			],
+			"current_duration" : 800,
+			"pattern_class" : "ASP.",
+			"type" : "SPIKES",
+			"INCLUDE" : "true",
+			"IDX_NOTE" : [
+				0,
+				""
+			],
+			"pattern_weight" : 1,
+			"compartment" : 0
+		},
+	],
+	"multi_comp_constraints" : [
+	],
+	"parameter_ranges" : {
+		"VT" : [
+			9, 11
+		],
+		"D" : [
+			0,
+			500
+		],
+		"W" : [
+			0,
+			1
+		],
+		"VMIN" : [
+			7, 9
+		],
+		"VR" : [
+			-70,
+			-69
+		],
+		"G" : [
+			150,
+			200
+		],
+		"P" : [
+			0.01,
+			0.5
+		],
+		"A" : [
+			0,
+			0.02
+		],
+		"B" : [
+			-50,
+			50
+		],
+		"VPEAK" : [
+			94,
+			95
+		],
+		"CM" : [
+			10,
+			1000
+		],
+		"K" : [
+			0.25,
+			4.0
+		]
+	}
+}

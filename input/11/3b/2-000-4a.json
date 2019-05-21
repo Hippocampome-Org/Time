@@ -1,0 +1,121 @@
+{
+"parameter_ranges" : {
+		"K" : [
+			0.25,
+			2
+		],
+		"A" : [
+			0,
+			0.01
+		],
+		"B" : [
+			-25,
+			25
+		],
+		"D" : [
+			0,
+			300
+		],
+		"CM" : [
+			10,
+			1500
+		],
+		"VR" : [
+			-59,
+			-57
+		],
+		"VMIN" : [
+			12,
+			13
+		],
+		"VT" : [
+			10,
+			25
+		],
+		"VPEAK" : [
+			87,
+			90
+		],
+		"G" : [
+			150,
+			200
+		],
+		"P" : [
+			0.01,
+			0.5
+		],
+		"W" : [
+			0,
+			1
+		]
+	},
+
+spike_pattern_constraints:[		
+					
+					{
+					"INCLUDE" : true,
+					IDX_NOTE:[1, "ASP", "ca3b pyramidal"],
+					pattern_class:ASP,
+					compartment:0,
+					type:SPIKES,	
+					current:{V:[100, 500]},
+					current_duration:337,						
+					time_min:100,
+					valid_max_v:{V:200},															
+					
+					fsl:{V:4.1, W:0.0},
+					pss:{V:132.57, W:0.0},
+					n_spikes:{V:7, W:0.0},
+					
+					sfa_linear_m1:{V:0.349, W:1.5}, 
+					sfa_linear_b1:{V:1.174, W:1.5},
+					n_sfa_isis1:{V:6, W:0.0},					
+					
+					sfa_linear_m2:{V:0, W:0}, 
+					sfa_linear_b2:{V:0, W:1.5},
+					n_sfa_isis2:{V:0, W:0.0},
+					
+					eval:[fsl, pss, n_sfa_isis1],
+					pattern_weight:1.00
+					}
+			],
+pattern_repair_weights:[1.0, 0.00, 0.00],
+"multi_comp_constraints" : [{
+			"type" : "EXCITABILITY",
+			"INCLUDE" : true,
+			"current_min" : 0,
+			"current_max" : 1000,
+			"current_duration" : 100,
+			"current_step" : 10,
+			"rheo_diff" : 1000,
+			"cons_weight" : 1.0
+		}, {
+			"type" : "INP_RES",
+			"INCLUDE" : true,
+			"current" : -100,
+			"current_duration" : 1000,
+			"v_at_time" : 900,
+			"cons_weight" : 1.0
+		}, {
+			type : PROPAGATION,
+			"INCLUDE" : true,
+			dend_current_min : 500,
+			dend_current_max : 2000,
+			dend_current_time_min : 50,
+			dend_current_duration : 100,
+			dend_current_step : 100,
+			dend_target_spike_freq : 10,
+			spike_prop_rate_min : 1,
+			cons_weight : 1.0
+		}, {
+			type : SYN_STIM_EPSP,
+			"INCLUDE" : true,
+			sim_duration : 100,
+			ampa_epsp : {
+				V : [0.1, 0.9]
+			},
+			ampa_tau : 5,
+			cons_weight : 1.0
+		}
+	]
+}

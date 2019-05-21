@@ -5,6 +5,7 @@ import org.apache.commons.math3.exception.MaxCountExceededException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.stat.StatUtils;
 
+import ec.app.izhikevich.evaluator.MultiCompConstraintEvaluator;
 import ec.app.izhikevich.inputprocess.labels.ModelParameterID;
 import ec.app.izhikevich.model.neurontypes.mc.EAGenes;
 import ec.app.izhikevich.spike.SpikePatternAdapting;
@@ -42,9 +43,12 @@ public class Izhikevich9pModelMC implements FirstOrderDifferentialEquations{
 	//compartmental rheobases
 	private double rheoBases[];
 	
+	private boolean iso_comp;
+	
 	public Izhikevich9pModelMC(int nComps) {	
 		this.nCompartments = nComps;
 		rheoBases = new double[nComps];
+		setIso_comp(false);
 	}
 	
 	public void setInputParameters(double[] appCurrent, double time_min, double duration_of_current) {
@@ -225,12 +229,31 @@ public class Izhikevich9pModelMC implements FirstOrderDifferentialEquations{
 		for(int i=0;i<nCompartments;i++){
 			Izhikevich9pModel isolatedCompartment = getIsolatedCompartment(i);
 			double rheo = isolatedCompartment.getRheo(currDur, iMin, iMax, iSearchStep);
+			if(rheo>iMax) {
+				rheo=iMax+iSearchStep;
+			}
 			this.rheoBases[i]=rheo;
 		}
 		
 		//return rheo;
 		//return binarySearchForRheo( compIdx,  currDur,  iMin,  iMax, iSearchStep);
 	}
+	
+	public void determineRheobases_rb(float currDur, double i_max, double i_min, double iSearchStep) {
+		//return LinearSearchForRheo( compIdx,  currDur,  iMin,  iMax,  iSearchStep);
+		for(int i=0;i<nCompartments;i++){
+			Izhikevich9pModel isolatedCompartment = getIsolatedCompartment(i);
+			double rheo = isolatedCompartment.getRheo_rb(currDur, i_max, i_min, iSearchStep);
+			if(rheo<i_min) {
+				rheo=i_min-iSearchStep;
+			}
+			this.rheoBases[i]=rheo;
+		}
+		
+		//return rheo;
+		//return binarySearchForRheo( compIdx,  currDur,  iMin,  iMax, iSearchStep);
+	}
+	
 	public void determineRampRheobases(float currDur, double iMin, double iMax, double iSearchStep) {
 		for(int i=0;i<nCompartments;i++){
 			Izhikevich9pModel isolatedCompartment = getIsolatedCompartment(i);
@@ -258,7 +281,7 @@ public class Izhikevich9pModelMC implements FirstOrderDifferentialEquations{
 		return vDefs;
 	}
 	
-	private Izhikevich9pModel getIsolatedCompartment(int compIdx){
+	public Izhikevich9pModel getIsolatedCompartment(int compIdx){
 		Izhikevich9pModel model = new Izhikevich9pModel(); 
         model.setK(this.getK()[compIdx]);
 		model.setA(this.getA()[compIdx]);
@@ -354,13 +377,24 @@ public class Izhikevich9pModelMC implements FirstOrderDifferentialEquations{
 			return new Izhikevich9pModelMC(2);
 		}
 		if(EAGenes.nComps==3){
-			return new Izhikevich9pModel3C(3);
+			if(MultiCompConstraintEvaluator.forwardConnectionIdcs[2]==0)
+				return new Izhikevich9pModel3C(3);
+			else
+				return new Izhikevich9pModel3C_L2(3);
 		}
 		if(EAGenes.nComps==4){
 			return new Izhikevich9pModel4C(4);
 		}
 		System.out.println("rightModel needs to be instantiated!!--Izhikevich9pModelMC.java");
 		return null;	
+	}
+
+	public boolean isIso_comp() {
+		return iso_comp;
+	}
+
+	public void setIso_comp(boolean iso_comp) {
+		this.iso_comp = iso_comp;
 	}
 	
 }
