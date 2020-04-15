@@ -35,5 +35,10 @@ Frontiers in neuroinformatics. 2018 Mar 13;12:8.
 Venkadesh S, Komendantov AO, Listopad S, Scott EO, De Jong K, Krichmar JL, Ascoli GA. 
 https://doi.org/10.3389/fninf.2018.00008
 
+For comprehensive results (applied to hippocampal neuron types), refer to this article: 
+Simple models of quantitative firing phenotypes in hippocampal neurons: Comprehensive coverage of intrinsic diversity. 
+PLOS Computational Biology. 2019 Oct 28. 
+Venkadesh S, Komendantov AO, Wheeler DW, Hamilton DJ, Ascoli GA. https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007462
+
 For more details on simulating the models, please refer to this help page:
 http://hippocampome.org/csv2db/Help_Model_Simulation.php
