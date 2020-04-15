@@ -41,4 +41,4 @@ PLOS Computational Biology. 2019 Oct 28.
 Venkadesh S, Komendantov AO, Wheeler DW, Hamilton DJ, Ascoli GA. https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007462
 
 For more details on simulating the models, please refer to this help page:
-http://hippocampome.org/csv2db/Help_Model_Simulation.php
+http://hippocampome.org/
